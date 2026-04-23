@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootyScopeFG | Antrenör Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #f59e0b; --dark: #0d0d0d; --card: #161616; --border: #333; }
+        body { background-color: var(--dark); color: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #111; padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; border-bottom: 2px solid var(--gold); padding-bottom: 15px; }
+        .sidebar-logo svg { width: 35px; height: 35px; }
+        .sidebar-logo h2 { color: #fff; font-size: 20px; margin: 0; font-weight: 600; }
+        .sidebar-logo h2 span { color: var(--gold); }
+        .sidebar nav a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; font-size: 14px; }
+        .sidebar nav a:hover, .sidebar nav a.active { background: #222; color: var(--gold); }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; padding: 40px; background: radial-gradient(circle at top right, #1a1a1a, #0d0d0d); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; margin: 0; }
+
+        /* Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 15px; padding: 25px; border: 1px solid var(--border); position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 200px; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
+        .card h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #fff; }
+        
+        .gold-text { color: var(--gold); font-weight: 600; }
+        .days-box { font-size: 42px; font-weight: bold; color: var(--gold); margin: 5px 0; }
+
+        /* Butonlar */
+        .btn-download { display: flex; align-items: center; justify-content: center; background: var(--gold); color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; font-size: 14px; margin-top: 10px; border: none; cursor: pointer; }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+        .btn-download.mac { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+        .btn-download.support { background: #25D366; color: white; }
+
+        @media (max-width: 900px) { .sidebar { width: 100%; height: auto; } body { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"></path></svg>
+            <h2>FootyScope<span>FG</span></h2>
+        </div>
+        <nav>
+            <a href="#" class="active">🏠 Panel Ana Sayfa</a>
+            <a href="mailto:iletisim@footyscopefg.com">📧 Teknik Destek</a>
+            <a href="#" onclick="logout()" style="margin-top: auto; color: #ff4444; border-top: 1px solid #333; padding-top: 15px;">🚪 Çıkış Yap</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Hoş Geldin, <span class="gold-text">Hocam</span></h1>
+            <div id="current-date" style="color: #666; font-size: 14px;"></div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Hesap Özeti</h3>
+                <p>Durum: <span class="gold-text">Aktif</span></p>
+                <div class="days-box"><span id="days-count">30</span> <span style="font-size:18px; color:#666;">Gün Kaldı</span></div>
+            </div>
+
+            <div class="card">
+                <h3>Yazılımı İndir (v1.1)</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+                    <a href="https://docs.google.com/uc?export=download&id=16u5yZ9WvPcr1bPnx9GemPI6GYIR3Y48q" class="btn-download">
+                        Windows Sürümü (EXE)
+                    </a>
+                    <a href="https://docs.google.com/uc?export=download&id=1wOv1-afhqzg32IpmWh7MimFL-D0PskHY" class="btn-download mac">
+                        Mac Sürümü (.APP)
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Teknik Destek</h3>
+                <a href="https://wa.me/905436688555" target="_blank" class="btn-download support" style="margin-top: auto;">
+                    WhatsApp Destek Hattı
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
+            authDomain: "footyscopefg-df329.firebaseapp.com",
+            projectId: "footyscopefg-df329",
+            storageBucket: "footyscopefg-df329.firebasestorage.app",
+            messagingSenderId: "1098459531879",
+            appId: "1:1098459531879:web:6df8f70be1e360440662c2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const regDate = new Date(user.metadata.creationTime);
+                const remaining = 30 - Math.floor((new Date() - regDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('days-count').innerText = remaining > 0 ? remaining : 0;
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.logout = () => {
+            signOut(auth).then(() => { window.location.href = "index.html"; });
+        };
+
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+    </script>
+</body>
+</html>
