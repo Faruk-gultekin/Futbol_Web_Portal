@@ -43,7 +43,6 @@
     </main>
 
     <script type="module">
-        // SÜRÜM UYUŞMAZLIĞI GİDERİLDİ (10.11.0 OLARAK EŞİTLENDİ)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -86,9 +85,11 @@
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
+                    // SENİN MEVCUT LİSANS ÜRETME MANTIĞIN (KORUNDU)
                     const gen = () => Math.random().toString(36).substr(2, 4).toUpperCase();
                     const autoLicense = `FS-${gen()}-${gen()}`;
 
+                    // VERİTABANINA KAYIT (DASHBOARD İLE TAM UYUMLU HALE GETİRİLDİ)
                     await setDoc(doc(db, "users", email), {
                         uid: user.uid,
                         email: email,
@@ -98,7 +99,6 @@
                     });
 
                     alert("Kayıt Başarılı!\nMasaüstü Lisansınız: " + autoLicense);
-                    window.switchTab('login');
                 }
             } catch (error) {
                 errorEl.innerText = "Hata: " + error.message;
