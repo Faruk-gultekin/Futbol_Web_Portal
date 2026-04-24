@@ -18,6 +18,11 @@
         .sidebar nav a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; font-size: 14px; }
         .sidebar nav a:hover, .sidebar nav a.active { background: #222; color: var(--gold); }
 
+        /* Lisans Sidebar Kutusu */
+        .license-sidebar-box { margin-top: 15px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; border-left: 3px solid var(--gold); }
+        .license-sidebar-box span { display: block; font-size: 11px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .license-sidebar-box code { color: var(--gold); font-size: 13px; font-weight: bold; letter-spacing: 1px; }
+
         /* Main Content */
         .main-content { flex-grow: 1; padding: 40px; background: radial-gradient(circle at top right, #1a1a1a, #0d0d0d); }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -81,6 +86,12 @@
         <nav>
             <a href="#" class="active">🏠 Panel Ana Sayfa</a>
             <a href="mailto:iletisim@footyscopefg.com">📧 Teknik Destek</a>
+            
+            <div class="license-sidebar-box">
+                <span>Lisans Anahtarınız</span>
+                <code id="sidebar-license-key">Yükleniyor...</code>
+            </div>
+
             <a href="#" onclick="logout()" style="margin-top: auto; color: #ff4444; border-top: 1px solid #333; padding-top: 15px;">🚪 Çıkış Yap</a>
         </nav>
     </div>
@@ -116,7 +127,7 @@
                 <h3>Hesap Özeti</h3>
                 <p style="margin:0;">Durum: <span class="gold-text">Aktif (Premium)</span></p>
                 <div class="days-box"><span id="days-count">30</span> <span class="days-label">Gün Kaldı</span></div>
-                <p style="font-size: 11px; color:#555; margin-top:auto;">Masaüstü lisansınız sistemde tanımlıdır.</p>
+                <p style="font-size: 11px; color:#555; margin-top:auto;">Masaüstü lisansınız solda tanımlıdır.</p>
             </div>
 
             <div class="card">
@@ -181,6 +192,17 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Firebase'den Lisans Çekme İşlemi
+                try {
+                    const userRef = doc(db, "users", user.email);
+                    const userDoc = await getDoc(userRef);
+                    if (userDoc.exists()) {
+                        document.getElementById('sidebar-license-key').innerText = userDoc.data().licenseKey;
+                    }
+                } catch (e) {
+                    console.error("Lisans çekme hatası:", e);
+                }
+
                 const isWeb = window.location.hostname !== "localhost" && window.location.protocol !== "file:" && !window.navigator.userAgent.includes("Electron");
                 const lockScreen = document.getElementById('lock-screen');
                 
