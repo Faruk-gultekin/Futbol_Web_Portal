@@ -3,38 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FootyScopeFG | Profesyonel Taktik Portalı</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>FootyScopeFG | Profesyonel Taktik Paneli</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #f59e0b; --bg: #0d0d0d; --card: #161616; --border: #333; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg); font-family: 'Poppins', sans-serif; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .login-container { background: var(--card); border: 1px solid var(--border); padding: 50px; border-radius: 24px; width: 400px; text-align: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .login-container::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, var(--gold), transparent, var(--gold)); border-radius: 24px; z-index: -1; opacity: 0.3; }
-        .logo h1 { font-size: 32px; color: #fff; margin-bottom: 10px; font-weight: 700; letter-spacing: 1px; }
-        .logo span { color: var(--gold); }
-        .logo p { color: #666; font-size: 14px; margin-bottom: 35px; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--border); background: #1a1a1a; color: #fff; font-size: 16px; text-align: center; transition: 0.3s; }
-        input:focus { border-color: var(--gold); outline: none; background: #222; }
-        button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--gold); color: #000; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 1px; }
-        button:hover { background: #d97706; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3); }
-        .error-msg { color: #ff4444; font-size: 13px; margin-top: 15px; font-weight: 500; height: 20px; }
+        :root { --gold: #f59e0b; --dark: #0d0d0d; --card: #161616; }
+        .auth-box { background: rgba(22, 22, 22, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #333; margin-top: 30px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
+        .tab { flex: 1; padding: 10px; cursor: pointer; color: #666; transition: 0.3s; }
+        .tab.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: 600; }
+        .input-field { width: 100%; padding: 12px; margin-bottom: 15px; background: #111; border: 1px solid #333; border-radius: 10px; color: white; box-sizing: border-box; }
+        .btn-auth { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+        .error-msg { color: #ff4444; font-size: 13px; margin-top: 10px; }
+        #forgot-password-link { color: var(--gold); text-decoration: none; font-size: 14px; display: inline-block; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <h1>FootyScope<span>FG</span></h1>
-            <p>Modern Futbolun Analiz Merkezi</p>
-        </div>
-        <input type="text" id="license-input" placeholder="LİSANS KODUNUZU GİRİNİZ">
-        <button onclick="login()">Sisteme Bağlan</button>
-        <div id="error-msg" class="error-msg"></div>
-    </div>
+    <header><div class="logo">FootyScope<span style="color: var(--gold);">FG</span></div></header>
+    <main class="container">
+        <section id="login-section" class="glass-card text-center hero-section">
+            <h1 class="gradient-text">Profesyonel Antrenörler İçin<br>Taktik Maç Kartı</h1>
+            <div class="auth-box">
+                <div class="tabs">
+                    <div id="login-tab" class="tab active" onclick="switchTab('login')">Giriş Yap</div>
+                    <div id="register-tab" class="tab" onclick="switchTab('register')">Kayıt Ol</div>
+                </div>
+                <div id="auth-form">
+                    <input type="email" id="email" class="input-field" placeholder="E-posta Adresiniz">
+                    <input type="password" id="password" class="input-field" placeholder="Şifreniz">
+                    <button id="auth-button" class="btn-auth" onclick="handleAuth()">Giriş Yap</button>
+                    <div id="forgot-password-container">
+                        <a href="javascript:void(0)" id="forgot-password-link" onclick="forgotPassword()">Şifremi Unuttum</a>
+                    </div>
+                    <p id="error-message" class="error-msg"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <script type="module">
+        // SÜRÜM UYUŞMAZLIĞI GİDERİLDİ (10.11.0 OLARAK EŞİTLENDİ)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
             authDomain: "footyscopefg-df329.firebaseapp.com",
@@ -43,18 +56,61 @@
             messagingSenderId: "1098459531879",
             appId: "1:1098459531879:web:6df8f70be1e360440662c2"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        window.login = async () => {
-            const code = document.getElementById('license-input').value.trim();
-            const errorDiv = document.getElementById('error-msg');
-            if(!code) return;
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, (user) => { if (user) window.location.href = "dashboard.html"; });
+
+        window.switchTab = (mode) => {
+            document.getElementById('login-tab').classList.toggle('active', mode === 'login');
+            document.getElementById('register-tab').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-button').innerText = mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
+            document.getElementById('forgot-password-container').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('error-message').innerText = "";
+        };
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error-message');
+            const mode = document.getElementById('auth-button').innerText;
+
+            if (!email || !password) { errorEl.innerText = "Lütfen alanları doldurun."; return; }
+
             try {
-                await signInWithEmailAndPassword(auth, `${code}@footyscopefg.com`, "123456");
-                window.location.href = "dashboard.html";
+                if (mode === 'Giriş Yap') {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    const gen = () => Math.random().toString(36).substr(2, 4).toUpperCase();
+                    const autoLicense = `FS-${gen()}-${gen()}`;
+
+                    await setDoc(doc(db, "users", email), {
+                        uid: user.uid,
+                        email: email,
+                        licenseKey: autoLicense,
+                        status: "active",
+                        createdAt: new Date().toISOString()
+                    });
+
+                    alert("Kayıt Başarılı!\nMasaüstü Lisansınız: " + autoLicense);
+                    window.switchTab('login');
+                }
             } catch (error) {
-                errorDiv.innerText = "Hatalı veya Süresi Dolmuş Lisans Anahtarı!";
+                errorEl.innerText = "Hata: " + error.message;
             }
+        };
+
+        window.forgotPassword = () => {
+            const email = document.getElementById('email').value.trim();
+            if (!email) { alert("Lütfen mail adresinizi yazın."); return; }
+            sendPasswordResetEmail(auth, email)
+                .then(() => alert("Sıfırlama maili gönderildi!"))
+                .catch(err => alert("Hata: " + err.message));
         };
     </script>
 </body>

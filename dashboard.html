@@ -4,87 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FootyScopeFG | Antrenör Paneli</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #f59e0b; --bg: #0d0d0d; --sidebar: #111; --card: #161616; --border: #2a2a2a; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Poppins', sans-serif; display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 20px; flex-shrink: 0; }
-        .logo { display: flex; align-items: center; gap: 15px; padding-bottom: 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
-        .logo h2 { font-size: 20px; font-weight: 700; }
-        .logo span { color: var(--gold); }
-        .nav-menu { flex-grow: 1; }
-        .nav-link { display: flex; align-items: center; gap: 12px; color: #888; text-decoration: none; padding: 15px 18px; border-radius: 12px; transition: 0.3s; font-weight: 500; margin-bottom: 10px; }
-        .nav-link:hover, .nav-link.active { background: rgba(245, 158, 11, 0.1); color: var(--gold); }
-        .main-content { flex-grow: 1; padding: 50px; background: radial-gradient(circle at top right, #1a1a1a, #0d0d0d); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .header h1 { font-size: 30px; font-weight: 600; }
-        .header h1 span { color: var(--gold); }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-        .card { background: var(--card); border-radius: 24px; padding: 35px; border: 1px solid var(--border); position: relative; overflow: hidden; transition: 0.4s; }
-        .card:hover { transform: translateY(-10px); border-color: var(--gold); }
-        .card::before { content: ""; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--gold); }
-        .card-header { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .card-body h3 { font-size: 42px; color: var(--gold); margin-bottom: 15px; font-weight: 700; }
-        .btn-action { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 700; transition: 0.3s; margin-top: 15px; font-size: 14px; }
-        .btn-primary { background: var(--gold); color: #000; }
-        .btn-outline { border: 2px solid var(--gold); color: var(--gold); }
-        .btn-success { background: #25D366; color: #fff; }
-        .btn-action:hover { transform: scale(1.03); opacity: 0.9; }
+        :root { --gold: #f59e0b; --dark: #0d0d0d; --card: #161616; --border: #333; }
+        body { background-color: var(--dark); color: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #111; padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; border-bottom: 2px solid var(--gold); padding-bottom: 15px; }
+        .sidebar-logo svg { width: 35px; height: 35px; }
+        .sidebar-logo h2 { color: #fff; font-size: 20px; margin: 0; font-weight: 600; }
+        .sidebar-logo h2 span { color: var(--gold); }
+        .sidebar nav a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; font-size: 14px; }
+        .sidebar nav a:hover, .sidebar nav a.active { background: #222; color: var(--gold); }
+
+        /* Main Content */
+        .main-content { flex-grow: 1; padding: 40px; background: radial-gradient(circle at top right, #1a1a1a, #0d0d0d); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; margin: 0; }
+
+        /* Grid ve Kartlar */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 15px; padding: 25px; border: 1px solid var(--border); position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 200px; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
+        .card h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #fff; }
+        
+        .gold-text { color: var(--gold); font-weight: 600; }
+        .days-box { font-size: 42px; font-weight: bold; color: var(--gold); margin: 5px 0; }
+        .days-label { font-size: 18px; color: #666; font-weight: 400; margin-left: 5px; }
+
+        /* REHBER GALERİSİ */
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .gallery-item { border-radius: 10px; overflow: hidden; border: 1px solid #333; background: #0a0a0a; transition: 0.3s; cursor: zoom-in; }
+        .gallery-item:hover { border-color: var(--gold); transform: scale(1.02); }
+        .img-box { width: 100%; height: 160px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; overflow: hidden; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: contain; }
+        .gallery-item p { padding: 10px; font-size: 12px; color: var(--gold); text-align: center; margin: 0; }
+
+        /* MODAL (Resim Büyütme) */
+        .modal { display: none; position: fixed; z-index: 20000; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; cursor: zoom-out; }
+        .modal-content { max-width: 90%; max-height: 90%; border-radius: 10px; border: 2px solid var(--gold); object-fit: contain; }
+        .close-modal { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+
+        /* Butonlar */
+        .btn-download { display: flex; align-items: center; justify-content: center; background: var(--gold); color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; font-size: 14px; margin-top: 10px; border: none; cursor: pointer; }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+        .btn-download.mac { background: transparent; border: 2px solid var(--gold); color: var(--gold); }
+        .btn-download.mac:hover { background: var(--gold); color: #000; }
+        .btn-download.support { background: #25D366; color: white; }
+
+        #lock-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
+        
+        @media (max-width: 900px) { .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); } body { flex-direction: column; } .gallery-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="logo">
-            <i class="fas fa-futbol" style="color: var(--gold); font-size: 24px;"></i>
+
+    <div id="imageModal" class="modal" onclick="this.style.display='none'">
+        <span class="close-modal">×</span>
+        <img class="modal-content" id="imgFull">
+    </div>
+
+    <div id="lock-screen">
+        <div style="background: #1a1a1a; padding: 40px; border-radius: 20px; border: 2px solid var(--gold); text-align: center;">
+            <h1 style="color: var(--gold);">LİSANS AKTİVASYONU</h1>
+            <p style="color: #aaa; margin-bottom:20px;">Masaüstü yazılımını aktif etmek için anahtarınızı giriniz.</p>
+            <input type="text" id="license-input" style="padding:12px; width:250px; margin:10px 0; border-radius:8px; border:1px solid #444; background:#222; color:#fff; text-align:center;" placeholder="FS-XXXX-XXXX">
+            <button class="btn-download" style="width:100%;" onclick="checkLicense()">Sistemi Aktif Et</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"></path></svg>
             <h2>FootyScope<span>FG</span></h2>
         </div>
-        <nav class="nav-menu">
-            <a href="#" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="#" class="nav-link"><i class="fas fa-users-viewfinder"></i> Scouting Paneli</a>
-            <a href="#" class="nav-link"><i class="fas fa-file-contract"></i> Analiz Raporları</a>
+        <nav>
+            <a href="#" class="active">🏠 Panel Ana Sayfa</a>
+            <a href="mailto:iletisim@footyscopefg.com">📧 Teknik Destek</a>
+            <a href="#" onclick="logout()" style="margin-top: auto; color: #ff4444; border-top: 1px solid #333; padding-top: 15px;">🚪 Çıkış Yap</a>
         </nav>
-        <a href="#" onclick="logout()" class="nav-link" style="color:#ff4444; margin-top: auto;"><i class="fas fa-power-off"></i> Güvenli Çıkış</a>
-    </aside>
-    <main class="main-content">
+    </div>
+
+    <div class="main-content">
         <div class="header">
-            <h1>Hoş Geldin, <span>Hocam</span></h1>
-            <div id="date-now" style="color: #666; font-weight: 500;"></div>
+            <h1>Hoş Geldin, <span class="gold-text">Hocam</span></h1>
+            <div id="current-date" style="color: #666; font-size: 14px;"></div>
         </div>
-        <div class="stats-grid">
+
+        <div class="grid">
             <div class="card">
-                <div class="card-header"><i class="fas fa-key"></i> Lisans Durumu</div>
-                <div class="card-body">
-                    <h3 id="days-count">--</h3>
-                    <p style="color:#888;">Giriş yaptığınız tarihten itibaren 30 gün kullanım hakkınız tanımlanmıştır.</p>
+                <h3>Hesap Özeti</h3>
+                <p style="margin:0;">Durum: <span class="gold-text">Aktif (Web)</span></p>
+                <div class="days-box"><span id="days-count">30</span> <span class="days-label">Gün Kaldı</span></div>
+                <p style="font-size: 11px; color:#555; margin-top:auto;">Masaüstü lisansınız sistemde tanımlıdır.</p>
+            </div>
+
+            <div class="card">
+                <h3>Yazılımı İndir (v1.1)</h3>
+                <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">Analizlerinizi yapmak için sürümünüzü seçin:</p>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+                    <a href="https://docs.google.com/uc?export=download&id=1O9Ght9M84Wz2pPv1UJFoJzCFGz5-ogwy" class="btn-download">
+                        Windows Sürümü (EXE)
+                    </a>
+                    <a href="https://docs.google.com/uc?export=download&id=1IWFs5QtASXStRzjmb7FTwyulKEmYsPkV" class="btn-download mac">
+                        Mac Sürümü (.APP)
+                    </a>
                 </div>
             </div>
+
             <div class="card">
-                <div class="card-header"><i class="fas fa-cloud-download-alt"></i> Yazılım Merkezi v1.1</div>
-                <div class="card-body">
-                    <a href="https://docs.google.com/uc?export=download&id=16u5yZ9WvPcr1bPnx9GemPI6GYIR3Y48q" class="btn-action btn-primary">
-                        <i class="fab fa-windows"></i> WINDOWS EXE İNDİR
-                    </a>
-                    <a href="https://docs.google.com/uc?export=download&id=1wOv1-afhqzg32IpmWh7MimFL-D0PskHY" class="btn-action btn-outline">
-                        <i class="fab fa-apple"></i> MAC OS (.APP) İNDİR
-                    </a>
-                </div>
+                <h3>Teknik Destek</h3>
+                <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Kurulum, lisans veya kullanım desteği için bize ulaşın:</p>
+                <a href="https://wa.me/905436688555" target="_blank" class="btn-download support" style="margin-top: auto;">
+                    WhatsApp Destek Hattı
+                </a>
             </div>
-            <div class="card">
-                <div class="card-header"><i class="fas fa-headset"></i> Teknik Destek Hattı</div>
-                <div class="card-body">
-                    <p style="color:#888; font-size:14px; margin-bottom: 20px;">Bir sorun mu yaşıyorsunuz? Doğrudan teknik ekibimize bağlanın.</p>
-                    <a href="https://wa.me/905436688555" target="_blank" class="btn-action btn-success">
-                        <i class="fab fa-whatsapp"></i> WHATSAPP DESTEK
-                    </a>
+
+            <div class="card" style="grid-column: span 2;">
+                <h3>FootyScopeFG Yazılım Rehberi</h3>
+                <p style="color: #888; font-size: 13px;">Görselleri büyütmek için üzerlerine tıklayabilirsiniz.</p>
+                <div class="gallery-grid">
+                    <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/17L2c8q59HGoB9LJtfCpUFYSfvaDgwhup')">
+                        <div class="img-box"><img src="https://lh3.googleusercontent.com/d/17L2c8q59HGoB9LJtfCpUFYSfvaDgwhup" alt="Genel Kontrol Paneli"></div>
+                        <p>Genel Kontrol Paneli</p>
+                    </div>
+                    <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/17vUBcLiGosTTJC47yzvg_IjiLUH-8gl1')">
+                        <div class="img-box"><img src="https://lh3.googleusercontent.com/d/17vUBcLiGosTTJC47yzvg_IjiLUH-8gl1" alt="Taktik Diziliş Ekranı"></div>
+                        <p>Taktik Diziliş Ekranı</p>
+                    </div>
+                    <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/1qX48G21P6ma8MWxuvC7PDn0g4D_BNgFW')">
+                        <div class="img-box"><img src="https://lh3.googleusercontent.com/d/1qX48G21P6ma8MWxuvC7PDn0g4D_BNgFW" alt="Duran Top Organizasyonu"></div>
+                        <p>Duran Top Organizasyonu</p>
+                    </div>
+                    <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/1-fywn2O3zhvPJavagkkfPtMTuFVnMTb2')">
+                        <div class="img-box"><img src="https://lh3.googleusercontent.com/d/1-fywn2O3zhvPJavagkkfPtMTuFVnMTb2" alt="Set Hücumu Kayıt Sistemi"></div>
+                        <p>Set Hücumu Kayıt Sistemi</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
             authDomain: "footyscopefg-df329.firebaseapp.com",
@@ -93,17 +159,62 @@
             messagingSenderId: "1098459531879",
             appId: "1:1098459531879:web:6df8f70be1e360440662c2"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                const isWeb = window.location.hostname !== "localhost" && window.location.protocol !== "file:" && !window.navigator.userAgent.includes("Electron");
+                const lockScreen = document.getElementById('lock-screen');
+                
+                if (isWeb) {
+                    if(lockScreen) lockScreen.remove();
+                } else {
+                    if (localStorage.getItem('licenseActive') === 'true') {
+                        if(lockScreen) lockScreen.style.display = 'none';
+                    } else {
+                        if(lockScreen) lockScreen.style.display = 'flex';
+                    }
+                }
+
                 const regDate = new Date(user.metadata.creationTime);
                 const remaining = 30 - Math.floor((new Date() - regDate) / (1000 * 60 * 60 * 24));
-                document.getElementById('days-count').innerText = (remaining > 0 ? remaining : 0) + " GÜN";
-            } else { window.location.href = "index.html"; }
+                document.getElementById('days-count').innerText = remaining > 0 ? remaining : 0;
+            } else { 
+                window.location.href = "index.html"; 
+            }
         });
-        window.logout = () => { signOut(auth).then(() => { window.location.href = "index.html"; }); };
-        document.getElementById('date-now').innerText = new Date().toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+
+        window.openImage = (src) => {
+            document.getElementById('imgFull').src = src;
+            document.getElementById('imageModal').style.display = 'flex';
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('licenseActive');
+            signOut(auth).then(() => { window.location.href = "index.html"; });
+        };
+
+        window.checkLicense = async () => {
+            const user = auth.currentUser;
+            const inputKey = document.getElementById('license-input').value.trim();
+            if (user) {
+                try {
+                    const userRef = doc(db, "users", user.email);
+                    const userDoc = await getDoc(userRef);
+                    if (userDoc.exists() && inputKey === userDoc.data().licenseKey) {
+                        alert("Lisans Doğrulandı!");
+                        const lockScreen = document.getElementById('lock-screen');
+                        if (lockScreen) lockScreen.style.display = 'none';
+                        localStorage.setItem('licenseActive', 'true');
+                    } else { alert("Hatalı Lisans!"); }
+                } catch (e) { alert("Bağlantı hatası!"); }
+            }
+        };
+
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
     </script>
 </body>
 </html>
