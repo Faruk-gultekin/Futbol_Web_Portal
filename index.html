@@ -8,7 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #f59e0b; --dark: #0d0d0d; --card: #161616; }
-        .auth-box { background: rgba(22, 22, 22, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #333; margin-top: 30px; }
+        body { background-color: var(--dark); color: #fff; font-family: 'Poppins', sans-serif; text-align: center; }
+        .hero-section { margin-top: 50px; }
+        .auth-box { background: rgba(22, 22, 22, 0.8); padding: 30px; border-radius: 20px; border: 1px solid #333; margin: 30px auto; max-width: 400px; }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
         .tab { flex: 1; padding: 10px; cursor: pointer; color: #666; transition: 0.3s; }
         .tab.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: 600; }
@@ -20,7 +22,7 @@
     </style>
 </head>
 <body>
-    <header><div class="logo">FootyScope<span style="color: var(--gold);">FG</span></div></header>
+    <header><div class="logo" style="font-size: 24px; font-weight: bold; margin-top:20px;">FootyScope<span style="color: var(--gold);">FG</span></div></header>
     <main class="container">
         <section id="login-section" class="glass-card text-center hero-section">
             <h1 class="gradient-text">Profesyonel Antrenörler İçin<br>Taktik Maç Kartı</h1>
@@ -32,7 +34,9 @@
                 <div id="auth-form">
                     <input type="email" id="email" class="input-field" placeholder="E-posta Adresiniz">
                     <input type="password" id="password" class="input-field" placeholder="Şifreniz">
+                    
                     <button id="auth-button" class="btn-auth" onclick="handleAuth()">Giriş Yap</button>
+                    
                     <div id="forgot-password-container">
                         <a href="javascript:void(0)" id="forgot-password-link" onclick="forgotPassword()">Şifremi Unuttum</a>
                     </div>
@@ -43,58 +47,86 @@
     </main>
 
     <script type="module">
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-// DİKKAT: Firestore modüllerini (getFirestore, doc, setDoc) eklemeyi unutma!
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-// Firebase Ayarların (Senin mevcut ayarlarınla aynı kalacak)
-const firebaseConfig = {
-    apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
-    authDomain: "footyscopefg-df329.firebaseapp.com",
-    projectId: "footyscopefg-df329",
-    storageBucket: "footyscopefg-df329.firebasestorage.app",
-    messagingSenderId: "1098459531879",
-    appId: "1:1098459531879:web:6df8f70be1e360440662c2"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
+            authDomain: "footyscopefg-df329.firebaseapp.com",
+            projectId: "footyscopefg-df329",
+            storageBucket: "footyscopefg-df329.firebasestorage.app",
+            messagingSenderId: "1098459531879",
+            appId: "1:1098459531879:web:6df8f70be1e360440662c2"
+        };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-// KAYIT OLMA FONKSİYONUN (Örnek form submit veya buton click)
-async function registerUser(email, password) {
-    try {
-        // 1. Kullanıcıyı Firebase Auth'a kaydet
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        let currentMode = 'login';
 
-        // 2. OTOMATİK LİSANS ÜRET (Örn: FS-A1B2-C3D4)
-        const randomPart1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const randomPart2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-        const newLicenseKey = `FS-${randomPart1}-${randomPart2}`;
+        // SEKME DEĞİŞTİRME MANTIĞI
+        window.switchTab = (mode) => {
+            currentMode = mode;
+            document.getElementById('login-tab').classList.toggle('active', mode === 'login');
+            document.getElementById('register-tab').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-button').innerText = mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
+            document.getElementById('forgot-password-container').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('error-message').innerText = '';
+        };
 
-        // 3. ÜRETİLEN LİSANSI FİRESTORE'A YAZ (Hata buradaydı, artık yazacak!)
-        const userEmailLower = user.email.toLowerCase();
-        await setDoc(doc(db, "users", userEmailLower), {
-            licenseKey: newLicenseKey,
-            createdAt: new Date().toISOString(),
-            status: "Premium"
-        });
+        // ANA GİRİŞ/KAYIT FONKSİYONU
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMsg = document.getElementById('error-message');
+            
+            if (!email || !password) {
+                errorMsg.innerText = "Lütfen e-posta ve şifre girin.";
+                return;
+            }
 
-        alert("Kayıt Başarılı! Lisansınız oluşturuldu.");
-        window.location.href = "dashboard.html"; // Panele yönlendir
+            errorMsg.innerText = "İşlem yapılıyor...";
 
-    } catch (error) {
-        alert("Kayıt Hatası: " + error.message);
-    }
-}
+            if (currentMode === 'register') {
+                // YENİ KAYIT VE LİSANS ÜRETİMİ
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
 
+                    const randomPart1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+                    const randomPart2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+                    const newLicenseKey = `FS-${randomPart1}-${randomPart2}`;
+
+                    const userEmailLower = user.email.toLowerCase();
+                    await setDoc(doc(db, "users", userEmailLower), {
+                        licenseKey: newLicenseKey,
+                        createdAt: new Date().toISOString(),
+                        status: "Premium"
+                    });
+
+                    window.location.href = "dashboard.html"; 
+                } catch (error) {
+                    errorMsg.innerText = "Kayıt Hatası: " + error.message;
+                }
+            } else {
+                // MEVCUT HESAPLA GİRİŞ YAPMA
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    window.location.href = "dashboard.html";
+                } catch (error) {
+                    errorMsg.innerText = "Giriş Hatası: Bilgilerinizi kontrol edin.";
+                }
+            }
+        };
+
+        // ŞİFRE SIFIRLAMA
         window.forgotPassword = () => {
             const email = document.getElementById('email').value.trim();
             if (!email) { alert("Lütfen mail adresinizi yazın."); return; }
             sendPasswordResetEmail(auth, email)
-                .then(() => alert("Sıfırlama maili gönderildi!"))
+                .then(() => alert("Sıfırlama maili gönderildi! Lütfen spam kutunuzu da kontrol edin."))
                 .catch(err => alert("Hata: " + err.message));
         };
     </script>
