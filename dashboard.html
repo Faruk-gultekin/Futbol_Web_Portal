@@ -176,7 +176,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
+console.log("🚀 HOCAM, YENİ KODLAR ÇALIŞIYOR!");
         const firebaseConfig = {
             apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
             authDomain: "footyscopefg-df329.firebaseapp.com",
@@ -190,17 +190,27 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
+       onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Firebase'den Lisans Çekme İşlemi
+                // LİSANS ÇEKME VE HATA YAKALAMA KISMI
                 try {
-                    const userRef = doc(db, "users", user.email);
+                    // Firebase Auth'taki maili her ihtimale karşı küçük harfe çeviriyoruz
+                    const userEmail = user.email.toLowerCase();
+                    const userRef = doc(db, "users", userEmail);
                     const userDoc = await getDoc(userRef);
+                    
                     if (userDoc.exists()) {
+                        // Belge varsa lisansı yaz
                         document.getElementById('sidebar-license-key').innerText = userDoc.data().licenseKey;
+                    } else {
+                        // Belge yoksa ekrana uyarı ver
+                        document.getElementById('sidebar-license-key').innerText = "KAYIT BULUNAMADI";
+                        alert("Hata: Bu hesaba ait bir lisans veritabanında yok. Lütfen yeni bir hesap açarak test edin.");
                     }
-                } catch (e) {
-                    console.error("Lisans çekme hatası:", e);
+                } catch (error) {
+                    // İzin veya bağlantı hatası varsa ekrana yaz
+                    document.getElementById('sidebar-license-key').innerText = "BAĞLANTI HATASI";
+                    alert("Firebase Hatası: " + error.message);
                 }
 
                 const isWeb = window.location.hostname !== "localhost" && window.location.protocol !== "file:" && !window.navigator.userAgent.includes("Electron");
