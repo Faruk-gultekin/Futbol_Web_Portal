@@ -17,7 +17,7 @@
         .input-field { width: 100%; padding: 12px; margin-bottom: 15px; background: #111; border: 1px solid #333; border-radius: 10px; color: white; box-sizing: border-box; }
         .btn-auth { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
-        .error-msg { color: #ff4444; font-size: 13px; margin-top: 10px; }
+        .error-msg { color: #ff4444; font-size: 13px; margin-top: 10px; line-height: 1.5; }
         #forgot-password-link { color: var(--gold); text-decoration: none; font-size: 14px; display: inline-block; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
@@ -48,7 +48,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        // E-posta doğrulama (sendEmailVerification) ve Çıkış yapma (signOut) eklendi!
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -66,7 +67,6 @@
 
         let currentMode = 'login';
 
-        // SEKME DEĞİŞTİRME MANTIĞI
         window.switchTab = (mode) => {
             currentMode = mode;
             document.getElementById('login-tab').classList.toggle('active', mode === 'login');
@@ -76,29 +76,33 @@
             document.getElementById('error-message').innerText = '';
         };
 
-        // ANA GİRİŞ/KAYIT FONKSİYONU
         window.handleAuth = async () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('error-message');
             
             if (!email || !password) {
+                errorMsg.style.color = "#ff4444";
                 errorMsg.innerText = "Lütfen e-posta ve şifre girin.";
                 return;
             }
 
-            errorMsg.innerText = "İşlem yapılıyor...";
+            errorMsg.style.color = "#aaa";
+            errorMsg.innerText = "İşlem yapılıyor, lütfen bekleyin...";
 
             if (currentMode === 'register') {
-                // YENİ KAYIT VE LİSANS ÜRETİMİ
                 try {
+                    // 1. Kullanıcıyı Kaydet
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
+                    // 2. Doğrulama E-postası Gönder
+                    await sendEmailVerification(user);
+
+                    // 3. Lisans Üret ve Veritabanına Yaz
                     const randomPart1 = Math.random().toString(36).substring(2, 6).toUpperCase();
                     const randomPart2 = Math.random().toString(36).substring(2, 6).toUpperCase();
                     const newLicenseKey = `FS-${randomPart1}-${randomPart2}`;
-
                     const userEmailLower = user.email.toLowerCase();
                     await setDoc(doc(db, "users", userEmailLower), {
                         licenseKey: newLicenseKey,
@@ -106,22 +110,43 @@
                         status: "Premium"
                     });
 
-                    window.location.href = "dashboard.html"; 
+                    // 4. Kullanıcıyı Sistemden At (Maili onaylamadan giremesin diye)
+                    await signOut(auth);
+
+                    // 5. Bilgi Ver ve Giriş Ekranına Döndür
+                    errorMsg.style.color = "#2ecc71"; // Yeşil renk (Başarılı)
+                    errorMsg.innerText = "Kayıt başarılı! E-posta adresinize bir onay linki gönderdik. Lütfen spam (gereksiz) kutunuzu da kontrol edip linke tıklayın, ardından giriş yapın.";
+                    
+                    // 3 saniye sonra "Giriş Yap" sekmesine geç
+                    setTimeout(() => { switchTab('login'); }, 3000);
+
                 } catch (error) {
-                    errorMsg.innerText = "Kayıt Hatası: " + error.message;
+                    errorMsg.style.color = "#ff4444";
+                    errorMsg.innerText = "Kayıt Hatası: " + (error.code === 'auth/email-already-in-use' ? 'Bu e-posta zaten kullanımda.' : error.message);
                 }
             } else {
-                // MEVCUT HESAPLA GİRİŞ YAPMA
                 try {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    // 1. Giriş Yapmayı Dene
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // 2. KAPI KONTROLÜ: E-posta onaylanmış mı?
+                    if (!user.emailVerified) {
+                        await signOut(auth); // Onaylamadıysa dışarı at
+                        errorMsg.style.color = "#ff4444";
+                        errorMsg.innerText = "Giriş Engellendi: Lütfen e-posta adresinize gönderilen doğrulama linkine tıklayarak hesabınızı aktif edin.";
+                        return; // İşlemi durdur, dashboarda gitmesini engelle
+                    }
+
+                    // 3. Her şey tamamsa Panele al
                     window.location.href = "dashboard.html";
                 } catch (error) {
-                    errorMsg.innerText = "Giriş Hatası: Bilgilerinizi kontrol edin.";
+                    errorMsg.style.color = "#ff4444";
+                    errorMsg.innerText = "Giriş Hatası: E-posta veya şifre hatalı.";
                 }
             }
         };
 
-        // ŞİFRE SIFIRLAMA
         window.forgotPassword = () => {
             const email = document.getElementById('email').value.trim();
             if (!email) { alert("Lütfen mail adresinizi yazın."); return; }
