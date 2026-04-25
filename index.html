@@ -43,67 +43,52 @@
     </main>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+// DİKKAT: Firestore modüllerini (getFirestore, doc, setDoc) eklemeyi unutma!
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
-            authDomain: "footyscopefg-df329.firebaseapp.com",
-            projectId: "footyscopefg-df329",
-            storageBucket: "footyscopefg-df329.firebasestorage.app",
-            messagingSenderId: "1098459531879",
-            appId: "1:1098459531879:web:6df8f70be1e360440662c2"
-        };
+// Firebase Ayarların (Senin mevcut ayarlarınla aynı kalacak)
+const firebaseConfig = {
+    apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
+    authDomain: "footyscopefg-df329.firebaseapp.com",
+    projectId: "footyscopefg-df329",
+    storageBucket: "footyscopefg-df329.firebasestorage.app",
+    messagingSenderId: "1098459531879",
+    appId: "1:1098459531879:web:6df8f70be1e360440662c2"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        onAuthStateChanged(auth, (user) => { if (user) window.location.href = "dashboard.html"; });
+// KAYIT OLMA FONKSİYONUN (Örnek form submit veya buton click)
+async function registerUser(email, password) {
+    try {
+        // 1. Kullanıcıyı Firebase Auth'a kaydet
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-        window.switchTab = (mode) => {
-            document.getElementById('login-tab').classList.toggle('active', mode === 'login');
-            document.getElementById('register-tab').classList.toggle('active', mode === 'register');
-            document.getElementById('auth-button').innerText = mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
-            document.getElementById('forgot-password-container').style.display = mode === 'login' ? 'block' : 'none';
-            document.getElementById('error-message').innerText = "";
-        };
+        // 2. OTOMATİK LİSANS ÜRET (Örn: FS-A1B2-C3D4)
+        const randomPart1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const randomPart2 = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const newLicenseKey = `FS-${randomPart1}-${randomPart2}`;
 
-        window.handleAuth = async () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const errorEl = document.getElementById('error-message');
-            const mode = document.getElementById('auth-button').innerText;
+        // 3. ÜRETİLEN LİSANSI FİRESTORE'A YAZ (Hata buradaydı, artık yazacak!)
+        const userEmailLower = user.email.toLowerCase();
+        await setDoc(doc(db, "users", userEmailLower), {
+            licenseKey: newLicenseKey,
+            createdAt: new Date().toISOString(),
+            status: "Premium"
+        });
 
-            if (!email || !password) { errorEl.innerText = "Lütfen alanları doldurun."; return; }
+        alert("Kayıt Başarılı! Lisansınız oluşturuldu.");
+        window.location.href = "dashboard.html"; // Panele yönlendir
 
-            try {
-                if (mode === 'Giriş Yap') {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-
-                    // SENİN MEVCUT LİSANS ÜRETME MANTIĞIN (KORUNDU)
-                    const gen = () => Math.random().toString(36).substr(2, 4).toUpperCase();
-                    const autoLicense = `FS-${gen()}-${gen()}`;
-
-                    // VERİTABANINA KAYIT (DASHBOARD İLE TAM UYUMLU HALE GETİRİLDİ)
-                    await setDoc(doc(db, "users", email), {
-                        uid: user.uid,
-                        email: email,
-                        licenseKey: autoLicense,
-                        status: "active",
-                        createdAt: new Date().toISOString()
-                    });
-
-                    alert("Kayıt Başarılı!\nMasaüstü Lisansınız: " + autoLicense);
-                }
-            } catch (error) {
-                errorEl.innerText = "Hata: " + error.message;
-            }
-        };
+    } catch (error) {
+        alert("Kayıt Hatası: " + error.message);
+    }
+}
 
         window.forgotPassword = () => {
             const email = document.getElementById('email').value.trim();
