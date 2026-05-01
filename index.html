@@ -7,135 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #f59e0b; --dark: #0d0d0d; --card: #161616; }
-        
-        /* Genel Saha Ayarları */
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', -apple-system, sans-serif;
-            height: 100vh;
-            background-color: var(--dark);
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-
-        /* Bölünmüş Ekran Taktigi */
-        .split-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* SOL KANAT - Vitrin ve Görsel Şov */
-        .left-side {
-            flex: 1.3;
-            background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%);
-            padding: 50px 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border-right: 3px solid var(--gold);
-            position: relative;
-            overflow-y: auto;
-        }
-
-        /* SAĞ KANAT - Giriş Paneli */
-        .right-side {
-            flex: 0.7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--dark);
-            padding: 40px;
-        }
-
-        /* Sol Kanat İçerik Tasarımları */
-        .brand-title {
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--gold);
-            margin: 0 0 10px 0;
-            letter-spacing: -1px;
-        }
-        
-        .brand-subtitle {
-            font-size: 16px;
-            color: #cccccc;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        /* 4'lü Görsel Izgarası (Grid) */
-        .tactical-image-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .tactical-image-grid img {
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #333;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            object-fit: cover;
-        }
-        .tactical-image-grid img:hover {
-            transform: scale(1.03);
-            border-color: var(--gold);
-            z-index: 10;
-        }
-
-        /* 3'lü Özellik Kutuları */
-        .features-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-        .feature-item {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--gold);
-        }
-        .feature-item h4 {
-            margin: 0 0 5px 0;
-            color: var(--gold);
-            font-size: 15px;
-        }
-        .feature-item p {
-            margin: 0;
-            font-size: 13px;
-            color: #aaaaaa;
-        }
-
-        /* Alt Bilgi */
-        .footer {
-            font-size: 12px;
-            color: #555;
-            margin-top: auto;
-            padding-top: 20px;
-        }
-
-        /* SAĞ TARAF - Orijinal Form CSS'leri */
-        .auth-box { 
-            background: var(--card); 
-            padding: 40px 30px; 
-            border-radius: 20px; 
-            border: 1px solid #333; 
-            width: 100%; 
-            max-width: 400px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-            text-align: center;
-        }
-        .auth-header {
-            margin-bottom: 25px;
-        }
-        .auth-header h2 {
-            color: #fff;
-            margin: 0;
-            font-size: 24px;
-        }
+        body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; height: 100vh; background-color: var(--dark); color: #ffffff; overflow-x: hidden; }
+        .split-container { display: flex; min-height: 100vh; }
+        .left-side { flex: 1.3; background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%); padding: 50px 60px; display: flex; flex-direction: column; justify-content: center; border-right: 3px solid var(--gold); overflow-y: auto; }
+        .right-side { flex: 0.7; display: flex; align-items: center; justify-content: center; background-color: var(--dark); padding: 40px; }
+        .brand-title { font-size: 42px; font-weight: 800; color: var(--gold); margin: 0 0 10px 0; letter-spacing: -1px; }
+        .brand-subtitle { font-size: 16px; color: #cccccc; line-height: 1.6; margin-bottom: 30px; }
+        .tactical-image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .tactical-image-grid img { width: 100%; border-radius: 8px; border: 1px solid #333; box-shadow: 0 8px 20px rgba(0,0,0,0.6); transition: transform 0.3s ease; object-fit: cover; }
+        .tactical-image-grid img:hover { transform: scale(1.03); border-color: var(--gold); z-index: 10; }
+        .features-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+        .feature-item { background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold); }
+        .feature-item h4 { margin: 0 0 5px 0; color: var(--gold); font-size: 15px; }
+        .feature-item p { margin: 0; font-size: 13px; color: #aaaaaa; }
+        .footer { font-size: 12px; color: #555; margin-top: auto; padding-top: 20px; }
+        .auth-box { background: var(--card); padding: 40px 30px; border-radius: 20px; border: 1px solid #333; width: 100%; max-width: 400px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); text-align: center; }
+        .auth-header h2 { color: #fff; margin: 0 0 25px 0; font-size: 24px; }
         .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid #333; }
         .tab { flex: 1; padding: 10px; cursor: pointer; color: #666; transition: 0.3s; font-size: 15px; }
         .tab.active { color: var(--gold); border-bottom: 2px solid var(--gold); font-weight: 600; }
@@ -146,66 +33,34 @@
         .error-msg { color: #ff4444; font-size: 13px; margin-top: 15px; line-height: 1.5; min-height: 20px; }
         #forgot-password-link { color: var(--gold); text-decoration: none; font-size: 13px; display: inline-block; margin-top: 15px; cursor: pointer; transition: 0.2s;}
         #forgot-password-link:hover { color: #fff; }
-
-        /* 📧 TEKNİK DESTEK BUTONU CSS EKLENTİSİ */
-        .btn-support {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; padding: 12px; margin-top: 15px;
-            background: transparent; border: 1px solid #333;
-            color: #888; text-decoration: none; border-radius: 10px;
-            font-size: 13px; font-weight: 500; transition: 0.3s; box-sizing: border-box; font-family: 'Poppins', sans-serif;
-        }
+        .btn-support { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; margin-top: 15px; background: transparent; border: 1px solid #333; color: #888; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 500; transition: 0.3s; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
         .btn-support:hover { border-color: var(--gold); color: var(--gold); background: rgba(245, 158, 11, 0.05); }
-
-        /* Mobil Cihazlar İçin Ayar */
-        @media (max-width: 960px) {
-            .split-container { flex-direction: column; }
-            .left-side { border-right: none; border-bottom: 3px solid var(--gold); padding: 30px; }
-            .right-side { padding: 30px 20px; }
-        }
+        @media (max-width: 960px) { .split-container { flex-direction: column; } .left-side { border-right: none; border-bottom: 3px solid var(--gold); padding: 30px; } .right-side { padding: 30px 20px; } }
     </style>
 </head>
 <body>
 
 <div class="split-container">
-    
-    <!-- SOL KANAT: VİTRİN VE GÖRSELLER -->
     <div class="left-side">
         <h1 class="brand-title">FootyScopeFG</h1>
         <p class="brand-subtitle">Profesyonel Antrenörler İçin Taktik Maç Kartı. Mac ve Windows platformlarında saniyeler içinde taktiğinizi çizin, analizlerinizi yapın ve sahaya hükmedin.</p>
-        
-        <!-- 4'LÜ TAKTİK GÖRSEL IZGARASI -->
         <div class="tactical-image-grid">
             <img src="ana-merkez.png" alt="Ana Merkez Taktik">
             <img src="kose-vurusu-taktik.png" alt="Köşe Vuruşu Taktik">
             <img src="taktik-merkezi.png" alt="Taktik Merkezi">
             <img src="hücum-pres-taktik.png" alt="Hücum Pres Taktik">
         </div>
-
         <div class="features-grid">
-            <div class="feature-item">
-                <h4>🎯 Gelişmiş Taktik Tahtası</h4>
-                <p>Sürükle-bırak mantığıyla modern saha içi diziliş ve set organizasyonları çizin.</p>
-            </div>
-            <div class="feature-item">
-                <h4>🔒 Güvenli Lisans Sistemi</h4>
-                <p>Firebase altyapısı ile şifrelenmiş, süreli lisans ve tam kullanıcı kontrolü.</p>
-            </div>
-            <div class="feature-item">
-                <h4>💻 Çoklu Platform</h4>
-                <p>Hem Apple (MacOS) hem de Windows işletim sistemlerinde kusursuz performans.</p>
-            </div>
+            <div class="feature-item"><h4>🎯 Gelişmiş Taktik Tahtası</h4><p>Sürükle-bırak mantığıyla modern saha içi diziliş ve set organizasyonları çizin.</p></div>
+            <div class="feature-item"><h4>🔒 Güvenli Lisans Sistemi</h4><p>Firebase altyapısı ile şifrelenmiş, süreli lisans ve tam kullanıcı kontrolü.</p></div>
+            <div class="feature-item"><h4>💻 Çoklu Platform</h4><p>Hem Apple (MacOS) hem de Windows işletim sistemlerinde kusursuz performans.</p></div>
         </div>
-
         <div class="footer">Telif Hakkı © 2026 FootyScopeFG. Tüm Hakları Saklıdır.</div>
     </div>
 
-    <!-- SAĞ KANAT: KULLANICI GİRİŞ FORMU -->
     <div class="right-side">
         <div class="auth-box">
-            <div class="auth-header">
-                <h2>Sisteme Giriş</h2>
-            </div>
+            <div class="auth-header"><h2>Sisteme Giriş</h2></div>
             <div class="tabs">
                 <div id="login-tab" class="tab active" onclick="switchTab('login')">Giriş Yap</div>
                 <div id="register-tab" class="tab" onclick="switchTab('register')">Kayıt Ol</div>
@@ -220,23 +75,17 @@
                     <a href="javascript:void(0)" id="forgot-password-link" onclick="forgotPassword()">Şifremi Unuttum</a>
                 </div>
 
-                <!-- 🎯 TEKNİK DESTEK BUTONU BURAYA EKLENDİ -->
-                <a href="mailto:footyscopefg@outlook.com?subject=FootyScopeFG%20Destek%20Talebi" class="btn-support">
-                    📧 Teknik Destek & İletişim
-                </a>
-
+                <a href="mailto:footyscopefg@outlook.com?subject=FootyScopeFG%20Destek%20Talebi" class="btn-support">📧 Teknik Destek & İletişim</a>
                 <p id="error-message" class="error-msg"></p>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- ORİJİNAL FIREBASE JAVASCRIPT KODLARIN (GÜNCELLENDİ) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
@@ -251,10 +100,10 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentMode = 'login';
+    window.currentMode = 'login'; // Global scope
 
     window.switchTab = (mode) => {
-        currentMode = mode;
+        window.currentMode = mode;
         document.getElementById('login-tab').classList.toggle('active', mode === 'login');
         document.getElementById('register-tab').classList.toggle('active', mode === 'register');
         document.getElementById('auth-button').innerText = mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
@@ -276,62 +125,78 @@
         errorMsg.style.color = "#aaa";
         errorMsg.innerText = "İşlem yapılıyor, lütfen bekleyin...";
 
-        if (currentMode === 'register') {
-            try {
-                // 1. Kullanıcıyı Kaydet
+        try {
+            if (window.currentMode === 'register') {
+                // KAYIT İŞLEMİ
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. Doğrulama E-postası Gönder
                 await sendEmailVerification(user);
 
-                // 3. Lisans Üret ve Veritabanına Yaz
                 const randomPart1 = Math.random().toString(36).substring(2, 6).toUpperCase();
                 const randomPart2 = Math.random().toString(36).substring(2, 6).toUpperCase();
                 const newLicenseKey = `FS-${randomPart1}-${randomPart2}`;
-                const userEmailLower = user.email.toLowerCase();
-                await setDoc(doc(db, "users", userEmailLower), {
+                
+                await setDoc(doc(db, "users", email.toLowerCase()), {
                     licenseKey: newLicenseKey,
                     createdAt: new Date().toISOString(),
                     status: "Premium"
                 });
 
-                // 4. Kullanıcıyı Sistemden At (Maili onaylamadan giremesin diye)
                 await signOut(auth);
 
-                // 5. Bilgi Ver ve Giriş Ekranına Döndür
                 errorMsg.style.color = "#2ecc71"; 
-                errorMsg.innerText = "Kayıt başarılı! E-posta adresinize bir onay linki gönderdik. Lütfen spam (gereksiz) kutunuzu da kontrol edip linke tıklayın, ardından giriş yapın.";
-                
+                errorMsg.innerText = "Kayıt başarılı! E-posta adresinize bir onay linki gönderdik. Lütfen linke tıklayın, ardından giriş yapın.";
                 setTimeout(() => { switchTab('login'); }, 3000);
 
-            } catch (error) {
-                errorMsg.style.color = "#ff4444";
-                errorMsg.innerText = "Kayıt Hatası: " + (error.code === 'auth/email-already-in-use' ? 'Bu e-posta zaten kullanımda.' : error.message);
-            }
-        } else {
-            try {
-                // 1. Giriş Yapmayı Dene
+            } else {
+                // GİRİŞ İŞLEMİ (ZIRHLI v1.3)
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+                let user = userCredential.user;
 
-                // KRİTİK GÜNCELLEME: Firebase'den güncel durumu çekiyoruz
-                await user.reload(); 
+                // En güncel durumu zorla çekiyoruz
+                await user.reload();
+                user = auth.currentUser; 
 
-                // 2. KAPI KONTROLÜ: E-posta onaylanmış mı?
                 if (!user.emailVerified) {
-                    await signOut(auth); // Onaylamadıysa dışarı at
                     errorMsg.style.color = "#ff4444";
-                    errorMsg.innerText = "Giriş Engellendi: Lütfen e-posta adresinize gönderilen doğrulama linkine tıklayarak hesabınızı aktif edin.";
+                    errorMsg.innerHTML = `Giriş Engellendi: E-postanızı onaylamanız gerekiyor. <br><br> <a href="javascript:void(0)" onclick="resendVerification()" style="color:var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px;">Onay Mailini Tekrar Gönder</a>`;
+                    await signOut(auth);
                     return; 
                 }
 
-                // 3. Her şey tamamsa Panele al
-                window.location.href = "dashboard.html";
-            } catch (error) {
-                errorMsg.style.color = "#ff4444";
-                errorMsg.innerText = "Giriş Hatası: E-posta veya şifre hatalı.";
+                const userDoc = await getDoc(doc(db, "users", email.toLowerCase()));
+                if (userDoc.exists()) {
+                    window.location.href = "dashboard.html";
+                } else {
+                    errorMsg.style.color = "#ff4444";
+                    errorMsg.innerText = "Hata: Hesabınız veritabanında bulunamadı.";
+                    await signOut(auth);
+                }
             }
+        } catch (error) {
+            errorMsg.style.color = "#ff4444";
+            errorMsg.innerText = (error.code === 'auth/email-already-in-use') ? 'Bu e-posta zaten kullanımda.' : 'Hata: ' + error.message;
+        }
+    };
+
+    // TEKRAR GÖNDERME FONKSİYONU
+    window.resendVerification = async () => {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errorMsg = document.getElementById('error-message');
+        
+        try {
+            errorMsg.style.color = "#aaa";
+            errorMsg.innerText = "Tekrar gönderiliyor...";
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            await sendEmailVerification(userCredential.user);
+            await signOut(auth);
+            errorMsg.style.color = "#2ecc71";
+            errorMsg.innerText = "Onay maili tekrar gönderildi! Lütfen gelen kutunuzu (ve Spam klasörünü) kontrol edin.";
+        } catch (e) {
+            errorMsg.style.color = "#ff4444";
+            errorMsg.innerText = "Gönderim Hatası: Lütfen şifrenizi doğru girdiğinizden emin olun.";
         }
     };
 
