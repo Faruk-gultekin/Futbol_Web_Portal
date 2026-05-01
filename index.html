@@ -232,7 +232,7 @@
 
 </div>
 
-<!-- ORİJİNAL FIREBASE JAVASCRIPT KODLARIN (HİÇ DOKUNULMADI) -->
+<!-- ORİJİNAL FIREBASE JAVASCRIPT KODLARIN (GÜNCELLENDİ) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
@@ -300,10 +300,9 @@
                 await signOut(auth);
 
                 // 5. Bilgi Ver ve Giriş Ekranına Döndür
-                errorMsg.style.color = "#2ecc71"; // Yeşil renk (Başarılı)
+                errorMsg.style.color = "#2ecc71"; 
                 errorMsg.innerText = "Kayıt başarılı! E-posta adresinize bir onay linki gönderdik. Lütfen spam (gereksiz) kutunuzu da kontrol edip linke tıklayın, ardından giriş yapın.";
                 
-                // 3 saniye sonra "Giriş Yap" sekmesine geç
                 setTimeout(() => { switchTab('login'); }, 3000);
 
             } catch (error) {
@@ -316,12 +315,15 @@
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
+                // KRİTİK GÜNCELLEME: Firebase'den güncel durumu çekiyoruz
+                await user.reload(); 
+
                 // 2. KAPI KONTROLÜ: E-posta onaylanmış mı?
                 if (!user.emailVerified) {
                     await signOut(auth); // Onaylamadıysa dışarı at
                     errorMsg.style.color = "#ff4444";
                     errorMsg.innerText = "Giriş Engellendi: Lütfen e-posta adresinize gönderilen doğrulama linkine tıklayarak hesabınızı aktif edin.";
-                    return; // İşlemi durdur, dashboarda gitmesini engelle
+                    return; 
                 }
 
                 // 3. Her şey tamamsa Panele al
