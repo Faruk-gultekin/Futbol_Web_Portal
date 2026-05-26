@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootyScopeFG | Stratejik Analiz Merkezi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #d4af37; --light-gold: #ffdf73; --dark: #0d0d0d; --card: #161616; --border: #333; --bordo: #2b0a11; --dark-bordo: #1a060a; --rose: #b76e79; }
+        body { background-color: var(--dark); color: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; display: flex; min-height: 100vh; overflow-x: hidden; }
+        
+        .sidebar { width: 260px; background: #111; padding: 30px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; border-bottom: 2px solid var(--gold); padding-bottom: 15px; }
+        .sidebar-logo svg { width: 35px; height: 35px; }
+        .sidebar-logo h2 { color: #fff; font-size: 20px; margin: 0; font-weight: 600; }
+        .sidebar-logo h2 span { color: var(--gold); }
+        .sidebar nav a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; font-size: 14px; cursor: pointer; font-weight: bold;}
+        .sidebar nav a:hover, .sidebar nav a.active { background: #222; color: var(--gold); }
+
+        .license-sidebar-box { margin-top: 15px; padding: 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; border-left: 3px solid var(--gold); }
+        .license-sidebar-box span { display: block; font-size: 11px; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .license-sidebar-box code { color: var(--gold); font-size: 13px; font-weight: bold; letter-spacing: 1px; }
+
+        .lang-selector { margin-top: 20px; padding: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; }
+        .lang-selector select { width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid var(--gold); border-radius: 4px; font-family: 'Poppins'; outline: none; cursor: pointer; }
+
+        .main-content { flex-grow: 1; padding: 40px; background: radial-gradient(circle at top right, #1a1a1a, #0d0d0d); display: flex; flex-direction: column; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; margin: 0; }
+
+        .dashboard-wrapper { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 30px; align-items: start; }
+        .column { display: flex; flex-direction: column; gap: 20px; }
+        .card { background: var(--card); border-radius: 15px; padding: 25px; border: 1px solid var(--border); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold); }
+        .card h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #fff; }
+        
+        .gold-text { color: var(--gold); font-weight: 600; }
+        .days-box { font-size: 42px; font-weight: bold; color: var(--gold); margin: 5px 0; }
+        .days-label { font-size: 18px; color: #666; font-weight: 400; margin-left: 5px; }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .gallery-item { border-radius: 10px; overflow: hidden; border: 1px solid #333; background: #0a0a0a; transition: 0.3s; cursor: zoom-in; }
+        .gallery-item:hover { border-color: var(--gold); transform: scale(1.02); }
+        .img-box { width: 100%; height: 160px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #222; overflow: hidden; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: contain; }
+        .gallery-item p { padding: 10px; font-size: 12px; color: var(--gold); text-align: center; margin: 0; }
+
+        .modal { display: none; position: fixed; z-index: 20000; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; cursor: zoom-out; }
+        .modal-content { max-width: 90%; max-height: 90%; border-radius: 10px; border: 2px solid var(--gold); object-fit: contain; }
+        .close-modal { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+
+        .btn-download { display: flex; align-items: center; justify-content: center; background: var(--gold); color: #000; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; font-size: 14px; margin-top: 10px; border: none; cursor: pointer; box-sizing: border-box; }
+        .btn-download:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4); }
+
+        #lock-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; }
+        
+        /* === SİMÜLASYON ALANI === */
+        #simulation-view { display: none; flex-direction: column; gap: 15px; flex-grow: 1; }
+        .sim-header { background: var(--bordo); padding: 15px; border-radius: 10px; border: 1px solid var(--rose); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px; }
+        
+        .sim-controls { background: var(--bordo); border: 1px solid var(--rose); border-radius: 10px; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .team-control { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px dashed var(--gold); }
+        
+        /* Yeni Select Tasarımı */
+        .select-group { display: flex; gap: 5px; width: 100%; }
+        .team-control select, .team-control input[type="color"] { background: var(--dark-bordo); color: #fff; border: 1px solid var(--rose); padding: 6px; border-radius: 4px; font-family: 'Poppins'; flex: 1; min-width: 0; font-size: 11px; }
+        
+        .sim-btn { background: #4a121d; border: 1px solid var(--rose); color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; font-family: 'Poppins', sans-serif; font-size: 12px;}
+        .sim-btn:hover { background: #5c1624; border-color: var(--gold); }
+        .sim-btn.primary { background: var(--gold); color: #000; border: none; }
+        .sim-btn.primary:hover { background: var(--light-gold); }
+        .sim-btn.danger { background: #8b0000; border-color: #ff4d4d; }
+        .sim-btn.magic { background: linear-gradient(45deg, #E59E35, #d4af37); color: #000; border: none; font-weight: 800; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); } 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); } }
+
+        .canvas-area { flex-grow: 1; background: var(--dark-bordo); border: 2px solid var(--gold); border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 10px; position: relative; }
+        canvas { background: #1e4a28; border-radius: 5px; cursor: pointer; border: 2px solid #fff; width: 100%; height: auto; max-height: 600px; object-fit: contain;}
+
+        /* LÜKS SKORBOARD */
+        #scoreboard-panel {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(to bottom, var(--dark-bordo), var(--bordo));
+            border: 2px solid var(--gold); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 10px 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+            gap: 20px; z-index: 10;
+        }
+        .sb-team { font-size: 16px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px; width: 100px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .sb-score { font-size: 32px; font-weight: 800; color: var(--gold); background: #000; padding: 5px 15px; border-radius: 6px; border: 1px solid #333; }
+        .sb-divider { font-size: 24px; color: #888; font-weight: bold; }
+
+        @media (max-width: 1024px) { .dashboard-wrapper, .sim-controls { grid-template-columns: 1fr; } .select-group { flex-direction: column; } }
+        @media (max-width: 900px) { .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); } body { flex-direction: column; } }
+    </style>
+</head>
+<body>
+
+    <div id="imageModal" class="modal" onclick="this.style.display='none'">
+        <span class="close-modal">×</span><img class="modal-content" id="imgFull">
+    </div>
+    <div id="lock-screen">
+        <div style="background: #1a1a1a; padding: 40px; border-radius: 20px; border: 2px solid var(--gold); text-align: center;">
+            <h1 style="color: var(--gold);" data-i18n="lock_title">LİSANS AKTİVASYONU</h1>
+            <p style="color: #aaa; margin-bottom:20px;" data-i18n="lock_desc">Masaüstü yazılımını aktif etmek için anahtarınızı giriniz.</p>
+            <input type="text" id="license-input" style="padding:12px; width:250px; margin:10px 0; border-radius:8px; border:1px solid #444; background:#222; color:#fff; text-align:center;" placeholder="FS-XXXX-XXXX">
+            <button class="btn-download" style="width:100%;" onclick="checkLicense()" data-i18n="lock_btn">Sistemi Aktif Et</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"></path></svg>
+            <h2>FootyScope<span>FG</span></h2>
+        </div>
+        <nav>
+            <a id="nav-home" class="active" onclick="switchView('home')" data-i18n="nav_home">🏠 Panel Ana Sayfa</a>
+            <a id="nav-sim" onclick="switchView('sim')" data-i18n="nav_sim">🎮 11v11 Simülasyon</a>
+            <a href="mailto:iletisim@footyscopefg.com" data-i18n="nav_support">📧 Teknik Destek</a>
+            
+            <div class="license-sidebar-box">
+                <span data-i18n="license_label">Lisans Anahtarınız</span>
+                <code id="sidebar-license-key">...</code>
+            </div>
+
+            <div class="lang-selector">
+                <span style="font-size: 11px; color:#aaa; margin-bottom:5px; display:block;" data-i18n="lang_select">🌍 Sistem Dili:</span>
+                <select id="langSwitch" onchange="changeLanguage()">
+                    <option value="tr">🇹🇷 Türkçe</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="pt">🇵🇹 Português</option>
+                </select>
+            </div>
+
+            <a onclick="logout()" style="margin-top: auto; color: #ff4444; border-top: 1px solid #333; padding-top: 15px;" data-i18n="nav_logout">🚪 Çıkış Yap</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1><span data-i18n="welcome">Hoş Geldin, </span><span class="gold-text" data-i18n="coach">Hocam</span></h1>
+            <div id="current-date" style="color: #666; font-size: 14px;"></div>
+        </div>
+
+        <div id="home-view" class="dashboard-wrapper">
+            <div class="column left-column">
+                <div class="card" style="background: linear-gradient(145deg, #161616, #1a1a1a);">
+                    <h3 style="border-bottom: 1px solid var(--gold); padding-bottom: 10px;" data-i18n="card1_title">Stratejik Analiz Merkezi</h3>
+                    <div style="margin: 15px 0;">
+                        <p style="color: var(--gold); font-weight: 600; font-size: 16px; letter-spacing: 1px;" data-i18n="card1_sub">MODERN TAKTİK OPTİMİZASYON SİSTEMİ</p>
+                        <p style="color: #ccc; font-size: 14px; line-height: 1.8; font-style: italic;" data-i18n="card1_desc">
+                            "FootyScopeFG, oyunun kompleks yapısını dijital bir disiplinle analiz ederek antrenörlere yüksek doğruluklu karar destek mekanizması sunar."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 data-i18n="card2_title">Sistem Rehberi ve Arayüzler</h3>
+                    <div class="gallery-grid">
+                        <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/17L2c8q59HGoB9LJtfCpUFYSfvaDgwhup')">
+                            <div class="img-box"><img src="https://lh3.googleusercontent.com/d/17L2c8q59HGoB9LJtfCpUFYSfvaDgwhup" alt="Kontrol Paneli"></div><p data-i18n="gal1">Kontrol Paneli</p>
+                        </div>
+                        <div class="gallery-item" onclick="openImage('https://lh3.googleusercontent.com/d/17vUBcLiGosTTJC47yzvg_IjiLUH-8gl1')">
+                            <div class="img-box"><img src="https://lh3.googleusercontent.com/d/17vUBcLiGosTTJC47yzvg_IjiLUH-8gl1" alt="Taktik Diziliş"></div><p data-i18n="gal2">Taktik Diziliş</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column right-column">
+                <div class="card">
+                    <h3 data-i18n="card3_title">Hesap Özeti</h3>
+                    <p style="margin:0;"><span data-i18n="status">Durum:</span> <span class="gold-text" data-i18n="status_ok">Aktif (Premium)</span></p>
+                    <div class="days-box"><span id="days-count">30</span> <span class="days-label" data-i18n="days_left">Gün Kaldı</span></div>
+                </div>
+
+                <div class="card">
+                    <h3 data-i18n="card4_title">Yazılımı İndir</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+                        <a href="https://drive.google.com/uc?export=download&id=1XgUZx94gz8gsU7BM572i8KrOKMG1rAJN" target="_blank" class="btn-download" style="width:100%;" data-i18n="btn_win">Windows (EXE)</a>
+                        <a href="https://drive.google.com/uc?export=download&id=1jPl3dLkRQFRecnf2boEyYcmiHK3fhwke" target="_blank" class="btn-download" style="width:100%;" data-i18n="btn_mac">MacOS (APP)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="simulation-view">
+            <div class="sim-controls">
+                <div class="team-control">
+                    <h3 style="color:var(--gold); margin:0; border-bottom:1px solid #555; padding-bottom:5px;" data-i18n="sim_home">🏠 Ev Sahibi</h3>
+                    <div class="select-group">
+                        <select id="homeLeague" onchange="SimEngine.updateTeams('home')">
+                            <option value="custom" data-i18n="opt_custom">Özel Takım / Renk</option>
+                        </select>
+                        <select id="homeTeam" onchange="SimEngine.applyProTeam('home')"></select>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <input type="color" id="homeCol1" value="#e74c3c" onchange="SimEngine.updateColors()">
+                        <input type="color" id="homeCol2" value="#ffffff" onchange="SimEngine.updateColors()">
+                        <select id="homeTactic" style="flex:2;">
+                            <option value="4-4-2">4-4-2</option><option value="4-3-3">4-3-3</option><option value="3-5-2">3-5-2</option>
+                            <option value="4-2-3-1">4-2-3-1</option><option value="4-1-4-1">4-1-4-1</option>
+                            <option value="corner_r" data-i18n="opt_cr">Köşe Vuruşu (Sağ)</option><option value="corner_l" data-i18n="opt_cl">Köşe Vuruşu (Sol)</option>
+                        </select>
+                        <button class="sim-btn" onclick="SimEngine.applyFormation('home')" data-i18n="btn_apply">Uygula</button>
+                    </div>
+                    <button class="sim-btn magic" onclick="SimEngine.autoScore('home')" data-i18n="btn_magic">⚡ Gole Git (Oto-Skor)</button>
+                </div>
+
+                <div class="team-control">
+                    <h3 style="color:var(--gold); margin:0; border-bottom:1px solid #555; padding-bottom:5px;" data-i18n="sim_away">✈️ Deplasman</h3>
+                    <div class="select-group">
+                        <select id="awayLeague" onchange="SimEngine.updateTeams('away')">
+                            <option value="custom" data-i18n="opt_custom">Özel Takım / Renk</option>
+                        </select>
+                        <select id="awayTeam" onchange="SimEngine.applyProTeam('away')"></select>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <input type="color" id="awayCol1" value="#ffffff" onchange="SimEngine.updateColors()">
+                        <input type="color" id="awayCol2" value="#00529F" onchange="SimEngine.updateColors()">
+                        <select id="awayTactic" style="flex:2;">
+                            <option value="4-4-2">4-4-2</option><option value="4-3-3">4-3-3</option><option value="3-5-2">3-5-2</option>
+                            <option value="4-2-3-1">4-2-3-1</option><option value="4-1-4-1">4-1-4-1</option>
+                            <option value="corner_r" data-i18n="opt_cr">Köşe Vuruşu (Sağ)</option><option value="corner_l" data-i18n="opt_cl">Köşe Vuruşu (Sol)</option>
+                        </select>
+                        <button class="sim-btn" onclick="SimEngine.applyFormation('away')" data-i18n="btn_apply">Uygula</button>
+                    </div>
+                    <button class="sim-btn magic" onclick="SimEngine.autoScore('away')" data-i18n="btn_magic">⚡ Gole Git (Oto-Skor)</button>
+                </div>
+            </div>
+
+            <div class="sim-header">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span style="color: var(--gold); font-weight: bold; margin-right: 10px;"><span data-i18n="timeline">Zaman Çizelgesi:</span> <span id="frameCount" style="color:#fff; font-size:18px;">0</span> <span data-i18n="frames">Kare</span></span>
+                    <button class="sim-btn primary" onclick="SimEngine.saveFrame()" data-i18n="btn_save_frame">📸 Kare Kaydet</button>
+                    <button class="sim-btn" onclick="SimEngine.playSimulation()" data-i18n="btn_play">▶️ Hızlı Oynat</button>
+                    <button class="sim-btn danger" onclick="SimEngine.resetTimeline()" data-i18n="btn_clear_tl">🗑️ Çizelgeyi Sil</button>
+                    <button class="sim-btn danger" onclick="SimEngine.resetScore()" data-i18n="btn_reset_score">⏱ Skoru Sıfırla</button>
+                </div>
+                <div>
+                    <input type="text" id="simName" placeholder="Taktik Adı..." data-i18n="tactic_placeholder" style="margin-right: 10px; width: 150px; padding: 6px; border-radius: 4px; border: 1px solid var(--rose); background: var(--dark-bordo); color: #fff;">
+                    <button class="sim-btn primary" onclick="SimEngine.saveToCloud()" data-i18n="btn_cloud">☁️ Buluta Kaydet</button>
+                </div>
+            </div>
+            
+            <div class="canvas-area">
+                <div id="scoreboard-panel">
+                    <div class="sb-team" id="sb-home-name">EV SAHİBİ</div>
+                    <div class="sb-score" id="sb-home-score">0</div>
+                    <div class="sb-divider">-</div>
+                    <div class="sb-score" id="sb-away-score">0</div>
+                    <div class="sb-team" id="sb-away-name" style="text-align:right;">DEPLASMAN</div>
+                </div>
+
+                <canvas id="pitchCanvas" width="1000" height="600"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5WlQWhrTeX_Uc2MIseMUJ-Dp2KT0jyaQ",
+            authDomain: "footyscopefg-df329.firebaseapp.com",
+            projectId: "footyscopefg-df329",
+            storageBucket: "footyscopefg-df329.firebasestorage.app",
+            messagingSenderId: "1098459531879",
+            appId: "1:1098459531879:web:6df8f70be1e360440662c2"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUserEmail = "";
+
+        // --- I18N (ÇOKLU DİL MOTORU) ---
+        const i18n = {
+            "tr": { nav_home: "🏠 Panel Ana Sayfa", nav_sim: "🎮 11v11 Simülasyon", nav_support: "📧 Teknik Destek", license_label: "Lisans Anahtarınız", lang_select: "🌍 Sistem Dili:", nav_logout: "🚪 Çıkış Yap", welcome: "Hoş Geldin, ", coach: "Hocam", card1_title: "Stratejik Analiz Merkezi", card1_sub: "MODERN TAKTİK OPTİMİZASYON SİSTEMİ", card1_desc: '"FootyScopeFG, oyunun kompleks yapısını dijital bir disiplinle analiz ederek antrenörlere yüksek doğruluklu karar destek mekanizması sunar."', card2_title: "Sistem Rehberi", gal1: "Kontrol Paneli", gal2: "Taktik Diziliş", card3_title: "Hesap Özeti", status: "Durum:", status_ok: "Aktif (Premium)", days_left: "Gün Kaldı", card4_title: "Yazılımı İndir", sim_home: "🏠 Ev Sahibi", sim_away: "✈️ Deplasman", opt_custom: "Özel Takım / Renk", opt_cr: "Köşe Vuruşu (Sağ)", opt_cl: "Köşe Vuruşu (Sol)", btn_apply: "Uygula", btn_magic: "⚡ Gole Git (Oto-Skor)", timeline: "Zaman Çizelgesi:", frames: "Kare", btn_save_frame: "📸 Kare Kaydet", btn_play: "▶️ Hızlı Oynat", btn_clear_tl: "🗑️ Çizelgeyi Sil", btn_reset_score: "⏱ Skoru Sıfırla", btn_cloud: "☁️ Buluta Kaydet", lock_title: "LİSANS AKTİVASYONU", lock_desc: "Masaüstü yazılımını aktif etmek için anahtarınızı giriniz.", lock_btn: "Sistemi Aktif Et", l_country: "Ülke Seçin...", l_league: "Lig Seçin...", l_team: "Takım Seçin...", tactic_placeholder: "Taktik Adı...", sb_home: "EV SAHİBİ", sb_away: "DEPLASMAN", btn_win: "Windows (EXE)", btn_mac: "MacOS (APP)" },
+            "en": { nav_home: "🏠 Dashboard Home", nav_sim: "🎮 11v11 Simulation", nav_support: "📧 Tech Support", license_label: "Your License Key", lang_select: "🌍 System Language:", nav_logout: "🚪 Logout", welcome: "Welcome, ", coach: "Coach", card1_title: "Strategic Analysis Center", card1_sub: "MODERN TACTICAL OPTIMIZATION SYSTEM", card1_desc: '"FootyScopeFG analyzes the complex structure of the game with digital discipline."', card2_title: "System Guide", gal1: "Control Panel", gal2: "Tactical Formation", card3_title: "Account Summary", status: "Status:", status_ok: "Active (Premium)", days_left: "Days Left", card4_title: "Download Software", sim_home: "🏠 Home Team", sim_away: "✈️ Away Team", opt_custom: "Custom Team / Color", opt_cr: "Corner Kick (Right)", opt_cl: "Corner Kick (Left)", btn_apply: "Apply", btn_magic: "⚡ Auto-Score", timeline: "Timeline:", frames: "Frames", btn_save_frame: "📸 Save Frame", btn_play: "▶️ Fast Play", btn_clear_tl: "🗑️ Clear Timeline", btn_reset_score: "⏱ Reset Score", btn_cloud: "☁️ Save to Cloud", lock_title: "LICENSE ACTIVATION", lock_desc: "Enter your key to activate the desktop software.", lock_btn: "Activate System", l_country: "Select Country...", l_league: "Select League...", l_team: "Select Team...", tactic_placeholder: "Tactic Name...", sb_home: "HOME", sb_away: "AWAY", btn_win: "Windows (EXE)", btn_mac: "MacOS (APP)" }
+        };
+
+        window.changeLanguage = () => {
+            const lang = document.getElementById('langSwitch').value;
+            const dict = i18n[lang] || i18n['en'];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'text') {
+                        el.placeholder = dict[key];
+                    } else {
+                        el.innerText = dict[key];
+                    }
+                }
+            });
+            SimEngine.rebuildSelectOptions(dict);
+        };
+
+        // --- GÖRÜNÜM DEĞİŞTİRİCİ ---
+        window.switchView = (view) => {
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-sim').classList.remove('active');
+            if(view === 'home') {
+                document.getElementById('nav-home').classList.add('active');
+                document.getElementById('home-view').style.display = 'grid';
+                document.getElementById('simulation-view').style.display = 'none';
+            } else {
+                document.getElementById('nav-sim').classList.add('active');
+                document.getElementById('home-view').style.display = 'none';
+                document.getElementById('simulation-view').style.display = 'flex';
+                setTimeout(() => window.SimEngine.draw(), 100);
+            }
+        };
+
+        // --- DEVASA TAKIM VERİTABANI (JavaScript Formatına Dönüştürüldü) ---
+        const DB = {
+            "Süper Lig": {
+                "Beşiktaş": ["#000000", "#ffffff"], "Eyüpspor": ["#5c2d91", "#fdbb30"],
+                "Fenerbahçe": ["#001e61", "#ffed00"], "Galatasaray": ["#a32638", "#fdb912"],
+                "Kasımpaşa": ["#000080", "#ffffff"], "RAMS Başakşehir": ["#ff6600", "#00004d"],
+                "Alanyaspor": ["#ffa500", "#008000"], "Amed SK": ["#008000", "#ffffff"],
+                "Çaykur Rizespor": ["#008000", "#ffffff"], "Çorum FK": ["#cc0000", "#ffffff"],
+                "Erzurumspor FK": ["#000080", "#ffffff"], "Gaziantep FK": ["#ff0000", "#000000"],
+                "Gençlerbirliği": ["#ff0000", "#000000"], "Göztepe": ["#ffcc00", "#ff0000"],
+                "Kocaelispor": ["#008000", "#000000"], "Samsunspor": ["#ff0000", "#ffffff"],
+                "Trabzonspor": ["#870000", "#5cb8e6"], "TÜMOSAN Konyaspor": ["#008000", "#ffffff"]
+            },
+            "Trendyol 1. Lig ve Diğerleri": {
+                "Esenler Erokspor": ["#ffff00", "#008000"], "Fatih Karagümrük": ["#ff0000", "#000000"],
+                "İstanbulspor": ["#ffcc00", "#000000"], "Pendikspor": ["#ff0000", "#ffffff"],
+                "Sarıyer": ["#ffffff", "#0000ff"], "Ümraniyespor": ["#ff0000", "#ffffff"],
+                "Ankara Keçiörengücü": ["#ffffff", "#6a5acd"], "Antalyaspor": ["#ff0000", "#ffffff"],
+                "Bandırmaspor": ["#800000", "#ffffff"], "Batman Petrolspor": ["#ff0000", "#000000"],
+                "Bodrum FK": ["#008000", "#ffffff"], "Boluspor": ["#ff0000", "#ffffff"],
+                "Bursaspor": ["#800000", "#008000"], "Iğdır FK": ["#008000", "#ffffff"],
+                "Kayserispor": ["#ffcc00", "#ff0000"], "Manisa FK": ["#000000", "#ffffff"],
+                "Mardin 1969": ["#ff0000", "#ffffff"], "Muğlaspor": ["#008000", "#ffffff"],
+                "Sivasspor": ["#ff0000", "#ffffff"], "Vanspor FK": ["#ff0000", "#ffffff"]
+            },
+            "İngiltere Premier Lig": {
+                "Arsenal": ["#ef0107", "#ffffff"], "Aston Villa": ["#95bfe5", "#670e36"],
+                "Bournemouth": ["#da291c", "#000000"], "Brentford": ["#e30613", "#000000"],
+                "Brighton & Hove Albion": ["#0057b8", "#ffffff"], "Chelsea": ["#034694", "#ffffff"],
+                "Coventry City": ["#87c7ff", "#002d72"], "Crystal Palace": ["#1b458f", "#c4122e"],
+                "Everton": ["#003399", "#ffffff"], "Fulham": ["#ffffff", "#000000"],
+                "Hull City": ["#ffae00", "#000000"], "Ipswich Town": ["#0000ff", "#ffffff"],
+                "Leeds United": ["#ffffff", "#1d428a"], "Liverpool": ["#c8102e", "#ffffff"],
+                "Manchester City": ["#6cabdd", "#ffffff"], "Manchester United": ["#da291c", "#ffffff"],
+                "Newcastle United": ["#000000", "#ffffff"], "Nottingham Forest": ["#dd0000", "#ffffff"],
+                "Sunderland": ["#d71920", "#ffffff"], "Tottenham Hotspur": ["#ffffff", "#132257"]
+            },
+            "EFL Championship": {
+                "Birmingham City": ["#000080", "#ffffff"], "Blackburn Rovers": ["#0000ff", "#ffffff"],
+                "Bolton Wanderers": ["#ffffff", "#0000ff"], "Bristol City": ["#ff0000", "#ffffff"],
+                "Burnley": ["#6c1d45", "#99d6ea"], "Cardiff City": ["#000080", "#ffffff"],
+                "Charlton Athletic": ["#ff0000", "#ffffff"], "Derby County": ["#000000", "#ffffff"],
+                "Leyton Orient": ["#ff0000", "#ffffff"], "Lincoln City": ["#ff0000", "#ffffff"],
+                "Middlesbrough": ["#ff0000", "#ffffff"], "Millwall": ["#000080", "#ffffff"],
+                "Norwich City": ["#fff200", "#008000"], "Portsmouth": ["#0000ff", "#ffffff"],
+                "Preston North End": ["#ffffff", "#0000ff"], "QPR": ["#000080", "#ffffff"],
+                "Sheffield United": ["#ff0000", "#ffffff"], "Southampton": ["#ff0000", "#ffffff"],
+                "Stoke City": ["#ff0000", "#ffffff"], "Swansea City": ["#ffffff", "#000000"],
+                "Watford": ["#ffff00", "#000000"], "West Bromwich Albion": ["#000080", "#ffffff"],
+                "West Ham United": ["#7d2b3a", "#5dade2"], "Wolverhampton Wanderers": ["#fdb913", "#000000"]
+            },
+            "Serie A": {
+                "Atalanta": ["#000080", "#000000"], "Bologna": ["#ff0000", "#0000ff"],
+                "Cagliari": ["#ff0000", "#0000ff"], "Como": ["#0000ff", "#ffffff"],
+                "Fiorentina": ["#800080", "#ffffff"], "Frosinone": ["#ffff00", "#0000ff"],
+                "Genoa": ["#ff0000", "#0000ff"], "Internazionale": ["#000080", "#000000"],
+                "Juventus": ["#000000", "#ffffff"], "Lazio": ["#87ceeb", "#ffffff"],
+                "Lecce": ["#ffff00", "#ff0000"], "Milan": ["#ff0000", "#000000"],
+                "Napoli": ["#0000ff", "#ffffff"], "Parma": ["#ffff00", "#0000ff"],
+                "Roma": ["#800000", "#ffcc00"], "Sassuolo": ["#008000", "#ffffff"],
+                "Torino": ["#800000", "#ffffff"], "Udinese": ["#000000", "#ffffff"],
+                "Venezia": ["#ff8c00", "#000000"]
+            },
+            "Bundesliga": {
+                "Augsburg": ["#ffffff", "#ba312e"], "Bayer Leverkusen": ["#000000", "#ed1c24"],
+                "Bayern München": ["#dc052d", "#ffffff"], "Borussia Dortmund": ["#fde100", "#000000"],
+                "Borussia Mönchengladbach": ["#ffffff", "#008830"], "Eintracht Frankfurt": ["#e30613", "#000000"],
+                "Elversberg": ["#000000", "#ffffff"], "Freiburg": ["#e30613", "#ffffff"],
+                "Hamburg": ["#005ca9", "#ffffff"], "Hoffenheim": ["#1c68b7", "#ffffff"],
+                "Köln": ["#ffffff", "#ed1c24"], "Mainz": ["#ed1c24", "#ffffff"],
+                "Paderborn": ["#005ca9", "#ffffff"], "RB Leipzig": ["#dd013f", "#ffffff"],
+                "Schalke": ["#004d9d", "#ffffff"], "Stuttgart": ["#ffffff", "#ed1c24"],
+                "Union Berlin": ["#ed1c24", "#ffffff"], "Werder Bremen": ["#1d9657", "#ffffff"]
+            }
+        };
+
+        // --- SİMÜLASYON MOTORU ---
+        window.SimEngine = (() => {
+            const canvas = document.getElementById("pitchCanvas");
+            const ctx = canvas.getContext("2d");
+            const W = canvas.width, H = canvas.height;
+            let players = []; let frames = [];
+            let isDragging = false; let dragTarget = null; let animationTimer = null;
+            let currentScore = { home: 0, away: 0 };
+
+            const tactics = {
+                "4-4-2": [[0.05,0.5],[0.2,0.2],[0.2,0.4],[0.2,0.6],[0.2,0.8],[0.45,0.2],[0.45,0.4],[0.45,0.6],[0.45,0.8],[0.7,0.4],[0.7,0.6]],
+                "4-3-3": [[0.05,0.5],[0.2,0.2],[0.2,0.4],[0.2,0.6],[0.2,0.8],[0.4,0.5],[0.45,0.3],[0.45,0.7],[0.7,0.2],[0.75,0.5],[0.7,0.8]],
+                "3-5-2": [[0.05,0.5],[0.2,0.3],[0.2,0.5],[0.2,0.7],[0.45,0.15],[0.4,0.35],[0.4,0.65],[0.45,0.85],[0.55,0.5],[0.75,0.4],[0.75,0.6]],
+                "4-2-3-1":[[0.05,0.5],[0.2,0.2],[0.2,0.4],[0.2,0.6],[0.2,0.8],[0.4,0.35],[0.4,0.65],[0.6,0.2],[0.6,0.5],[0.6,0.8],[0.8,0.5]],
+                "4-1-4-1":[[0.05,0.5],[0.2,0.2],[0.2,0.4],[0.2,0.6],[0.2,0.8],[0.35,0.5],[0.55,0.2],[0.55,0.4],[0.55,0.6],[0.55,0.8],[0.75,0.5]],
+                "corner_r": [[0.05,0.5],[0.15,0.4],[0.15,0.6],[0.25,0.5],[0.4,0.3],[0.5,0.6],[0.85,0.35],[0.88,0.45],[0.85,0.55],[0.88,0.65],[0.98,0.98]],
+                "corner_l": [[0.05,0.5],[0.15,0.4],[0.15,0.6],[0.25,0.5],[0.4,0.7],[0.5,0.4],[0.85,0.35],[0.88,0.45],[0.85,0.55],[0.88,0.65],[0.98,0.02]]
+            };
+
+            const populateSelectors = () => {
+                ["home", "away"].forEach(side => {
+                    const lSel = document.getElementById(`${side}League`);
+                    lSel.innerHTML = `<option value="custom" data-i18n="opt_custom">Özel Takım / Renk</option>`;
+                    Object.keys(DB).forEach(l => lSel.innerHTML += `<option value="${l}">${l}</option>`);
+                });
+            };
+
+            const draw = () => {
+                ctx.fillStyle = "#1e4a28"; ctx.fillRect(0, 0, W, H);
+                ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 2;
+                
+                ctx.strokeRect(40, 30, W-80, H-60);
+                ctx.beginPath(); ctx.moveTo(W/2, 30); ctx.lineTo(W/2, H-30); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W/2, H/2, 80, 0, 2*Math.PI); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W/2, H/2, 5, 0, 2*Math.PI); ctx.fillStyle="white"; ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = "rgba(255,255,255,0.2)";
+                ctx.fillRect(10, H/2 - 50, 30, 100); ctx.strokeRect(10, H/2 - 50, 30, 100); 
+                ctx.fillRect(W-40, H/2 - 50, 30, 100); ctx.strokeRect(W-40, H/2 - 50, 30, 100); 
+
+                ctx.strokeRect(40, H/2 - 140, 150, 280); ctx.strokeRect(40, H/2 - 60, 50, 120);
+                ctx.strokeRect(W-190, H/2 - 140, 150, 280); ctx.strokeRect(W-90, H/2 - 60, 50, 120);
+                
+                ctx.beginPath(); ctx.arc(190, H/2, 70, -Math.PI/3, Math.PI/3); ctx.stroke();
+                ctx.beginPath(); ctx.arc(W-190, H/2, 70, Math.PI*2/3, Math.PI*4/3); ctx.stroke();
+                
+                ctx.beginPath(); ctx.arc(140, H/2, 4, 0, 2*Math.PI); ctx.fillStyle="white"; ctx.fill();
+                ctx.beginPath(); ctx.arc(W-140, H/2, 4, 0, 2*Math.PI); ctx.fillStyle="white"; ctx.fill();
+
+                const corners = [[40,30,0], [W-40,30,Math.PI/2], [40,H-30,-Math.PI/2], [W-40,H-30,Math.PI]];
+                corners.forEach(c => {
+                    ctx.beginPath(); ctx.arc(c[0], c[1], 15, c[2], c[2]+Math.PI/2); ctx.stroke(); 
+                    ctx.beginPath(); ctx.moveTo(c[0], c[1]); ctx.lineTo(c[0]-8, c[1]-20); ctx.strokeStyle="yellow"; ctx.lineWidth=3; ctx.stroke();
+                    ctx.fillStyle="red"; ctx.fillRect(c[0]-20, c[1]-20, 12, 10); ctx.strokeStyle="rgba(255,255,255,0.7)"; ctx.lineWidth=2;
+                });
+
+                players.forEach(p => {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.t === 'b' ? 8 : 12, 0, 2 * Math.PI);
+                    if (p.t === 'b') { 
+                        ctx.fillStyle = "#ffffff"; ctx.fill(); ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.stroke();
+                        ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 2*Math.PI); ctx.fillStyle="black"; ctx.fill();
+                    } else { 
+                        const grad = ctx.createLinearGradient(p.x-12, p.y, p.x+12, p.y);
+                        grad.addColorStop(0, p.c1); grad.addColorStop(0.5, p.c1);
+                        grad.addColorStop(0.5, p.c2); grad.addColorStop(1, p.c2);
+                        ctx.fillStyle = grad; ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
+                        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Arial"; ctx.textAlign = "center";
+                        ctx.fillText(p.name, p.x, p.y - 18);
+                    }
+                });
+            };
+
+            canvas.addEventListener('mousedown', (e) => {
+                const r = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / r.width;
+                const scaleY = canvas.height / r.height;
+                const mx = (e.clientX - r.left) * scaleX;
+                const my = (e.clientY - r.top) * scaleY;
+                
+                dragTarget = players.find(p => Math.hypot(p.x - mx, p.y - my) < 20);
+                if (dragTarget) isDragging = true;
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDragging || !dragTarget) return;
+                const r = canvas.getBoundingClientRect();
+                dragTarget.x = (e.clientX - r.left) * (canvas.width / r.width);
+                dragTarget.y = (e.clientY - r.top) * (canvas.height / r.height);
+                draw();
+            });
+            canvas.addEventListener('mouseup', () => { isDragging = false; dragTarget = null; });
+            canvas.addEventListener('mouseleave', () => { isDragging = false; dragTarget = null; });
+
+            populateSelectors();
+            
+            // Skorboard'u korumalı şekilde ilk dile ayarla
+            document.getElementById('sb-home-name').innerText = i18n["tr"].sb_home;
+            document.getElementById('sb-away-name').innerText = i18n["tr"].sb_away;
+
+            return {
+                draw,
+                rebuildSelectOptions: (dict) => {
+                    ["home", "away"].forEach(s => {
+                        const opt = document.querySelector(`#${s}League option[value="custom"]`);
+                        if(opt) opt.innerText = dict.opt_custom;
+                        
+                        const lVal = document.getElementById(`${s}League`).value;
+                        if(lVal === "custom" || lVal === "") {
+                            document.getElementById(`sb-${s}-name`).innerText = (s === 'home') ? dict.sb_home : dict.sb_away;
+                        }
+                    });
+                },
+                updateTeams: (side) => {
+                    const lVal = document.getElementById(`${side}League`).value;
+                    const tSel = document.getElementById(`${side}Team`);
+                    tSel.innerHTML = "";
+                    
+                    const lang = document.getElementById('langSwitch').value;
+                    const dict = i18n[lang] || i18n['en'];
+
+                    if(lVal === "custom" || !lVal) {
+                         document.getElementById(`sb-${side}-name`).innerText = side === 'home' ? dict.sb_home : dict.sb_away;
+                         return;
+                    }
+                    
+                    Object.keys(DB[lVal]).forEach(t => tSel.innerHTML += `<option value="${t}">${t}</option>`);
+                    SimEngine.applyProTeam(side);
+                },
+                updateColors: () => {
+                    const h1 = document.getElementById("homeCol1").value, h2 = document.getElementById("homeCol2").value;
+                    const a1 = document.getElementById("awayCol1").value, a2 = document.getElementById("awayCol2").value;
+                    players.forEach(p => { if(p.team==='home'){p.c1=h1; p.c2=h2;} else if(p.team==='away'){p.c1=a1; p.c2=a2;} });
+                    draw();
+                },
+                applyProTeam: (side) => {
+                    const lVal = document.getElementById(`${side}League`).value;
+                    if(lVal === "custom") return;
+                    
+                    const tVal = document.getElementById(`${side}Team`).value;
+                    const colors = DB[lVal][tVal];
+                    if(colors) {
+                        document.getElementById(`${side}Col1`).value = colors[0];
+                        document.getElementById(`${side}Col2`).value = colors[1];
+                        document.getElementById(`sb-${side}-name`).innerText = tVal.toUpperCase();
+                        SimEngine.updateColors();
+                    }
+                },
+                applyFormation: (team) => {
+                    const tName = document.getElementById(team + "Tactic").value;
+                    if(!tactics[tName]) return;
+                    
+                    players = players.filter(p => p.team !== team && p.t !== 'b'); 
+                    const c1 = document.getElementById(team + "Col1").value;
+                    const c2 = document.getElementById(team + "Col2").value;
+                    const isHome = team === 'home';
+                    const arr = tactics[tName];
+                    
+                    arr.forEach((pos, idx) => {
+                        let rx = isHome ? pos[0] : 1.0 - pos[0];
+                        let ry = isHome ? pos[1] : 1.0 - pos[1];
+                        players.push({ id:`${team}_${idx}`, t:'p', team:team, x: 40 + rx*(W-80), y: 30 + ry*(H-60), c1:c1, c2:c2, name:`${isHome?'EV':'DEP'}${idx+1}` });
+                    });
+                    
+                    if(!players.find(p=>p.t==='b')) players.push({id:`ball`, t:'b', team:'none', x:W/2, y:H/2, color:"#fff", name:""});
+                    draw();
+                },
+                autoScore: (team) => {
+                    if(players.length < 15) { alert("Önce sahaya her iki takımı da (11v11) dizmelisiniz!"); return; }
+                    
+                    frames = []; 
+                    frames.push(JSON.parse(JSON.stringify(players))); 
+                    
+                    let striker = players.find(p => p.team === team && (team==='home' ? p.x > W/2 : p.x < W/2));
+                    let ball = players.find(p => p.t === 'b');
+                    if(!striker || !ball) return;
+
+                    let targetGoalX = team === 'home' ? W-40 : 40;
+                    
+                    ball.x = striker.x + (team==='home'? 15 : -15); ball.y = striker.y;
+                    frames.push(JSON.parse(JSON.stringify(players)));
+                    
+                    striker.x = team === 'home' ? W-220 : 220;
+                    ball.x = striker.x + (team==='home'? 15 : -15);
+                    frames.push(JSON.parse(JSON.stringify(players)));
+
+                    ball.x = targetGoalX; ball.y = H/2;
+                    frames.push(JSON.parse(JSON.stringify(players)));
+                    
+                    currentScore[team]++;
+                    document.getElementById(`sb-${team}-score`).innerText = currentScore[team];
+
+                    document.getElementById('frameCount').innerText = frames.length;
+                    SimEngine.playSimulation();
+                },
+                saveFrame: () => {
+                    frames.push(JSON.parse(JSON.stringify(players)));
+                    document.getElementById('frameCount').innerText = frames.length;
+                },
+                playSimulation: () => {
+                    if(frames.length < 2) { alert("En az 2 kare kaydetmelisiniz!"); return; }
+                    let cFrame = 0;
+                    if(animationTimer) clearTimeout(animationTimer);
+                    
+                    const animate = () => {
+                        if (cFrame >= frames.length) return;
+                        players = frames[cFrame]; draw(); cFrame++;
+                        animationTimer = setTimeout(animate, 250); 
+                    };
+                    animate();
+                },
+                resetTimeline: () => { frames = []; document.getElementById('frameCount').innerText = "0"; },
+                resetScore: () => { currentScore={home:0, away:0}; document.getElementById('sb-home-score').innerText="0"; document.getElementById('sb-away-score').innerText="0"; },
+                saveToCloud: async () => {
+                    const tName = document.getElementById('simName').value.trim();
+                    if(!tName) { alert("Taktiğe bir isim verin!"); return; }
+                    if(frames.length === 0) { alert("Önce sahada hamle yapıp kare kaydedin!"); return; }
+                    if(!currentUserEmail) { alert("Oturum hatası, tekrar giriş yapın."); return; }
+                    try {
+                        await setDoc(doc(db, "users", currentUserEmail, "tactics", tName), { name: tName, frames: frames, score: currentScore, date: new Date().toISOString() });
+                        alert("✅ 11v11 Taktik Simülasyonu Başarıyla Buluta Kaydedildi!");
+                    } catch (e) { alert("Kayıt Hatası: " + e.message); }
+                }
+            };
+        })();
+
+        // --- AUTH SISTEMI VE SÜRE HESAPLAMA ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserEmail = user.email.toLowerCase();
+                try {
+                    const userRef = doc(db, "users", currentUserEmail);
+                    const userDoc = await getDoc(userRef);
+                    if (userDoc.exists()) {
+                        document.getElementById('sidebar-license-key').innerText = userDoc.data().licenseKey;
+                    } else {
+                        document.getElementById('sidebar-license-key').innerText = "KAYIT YOK";
+                    }
+                } catch (error) { document.getElementById('sidebar-license-key').innerText = "BAĞLANTI HATASI"; }
+
+                const isWeb = window.location.hostname !== "localhost" && window.location.protocol !== "file:" && !window.navigator.userAgent.includes("Electron");
+                const lockScreen = document.getElementById('lock-screen');
+                if (isWeb) { if(lockScreen) lockScreen.remove(); } 
+                else {
+                    if (localStorage.getItem('licenseActive') === 'true') { if(lockScreen) lockScreen.style.display = 'none'; } 
+                    else { if(lockScreen) lockScreen.style.display = 'flex'; }
+                }
+
+                // --- SÜRE ÇEKME MOTORU ---
+                const url = `https://firestore.googleapis.com/v1/projects/footyscopefg-df329/databases/(default)/documents/users/${currentUserEmail}`;
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.createTime) {
+                            const createTimeStr = data.createTime.split(".")[0] + "Z";
+                            const regDate = new Date(createTimeStr);
+                            const now = new Date();
+                            const diffTime = now.getTime() - regDate.getTime();
+                            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                            let remaining = 30 - diffDays;
+                            if (remaining < 0) remaining = 0;
+                            const daysEl = document.getElementById('days-count');
+                            if(daysEl) daysEl.innerText = remaining;
+                        }
+                    })
+                    .catch(err => console.error("Süre çekilemedi:", err));
+
+            } else { window.location.href = "index.html"; }
+        });
+
+        window.openImage = (src) => { document.getElementById('imgFull').src = src; document.getElementById('imageModal').style.display = 'flex'; };
+        window.logout = () => { localStorage.removeItem('licenseActive'); signOut(auth).then(() => { window.location.href = "index.html"; }); };
+        window.checkLicense = async () => {
+            const user = auth.currentUser; const inputKey = document.getElementById('license-input').value.trim();
+            if (user) {
+                try {
+                    const userRef = doc(db, "users", user.email); const userDoc = await getDoc(userRef);
+                    if (userDoc.exists() && inputKey === userDoc.data().licenseKey) {
+                        alert("Lisans Doğrulandı!"); localStorage.setItem('licenseActive', 'true');
+                        const lockScreen = document.getElementById('lock-screen'); if (lockScreen) lockScreen.style.display = 'none';
+                    } else { alert("Hatalı Lisans!"); }
+                } catch (e) { alert("Bağlantı hatası!"); }
+            }
+        };
+
+        const dateEl = document.getElementById('current-date');
+        if(dateEl) dateEl.innerText = new Date().toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric' });
+    </script>
+</body>
+</html>

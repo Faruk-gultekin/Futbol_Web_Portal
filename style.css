@@ -1,0 +1,81 @@
+* { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+body { 
+    background: radial-gradient(circle at top left, #1a2235, #0b0f19); 
+    color: #e2e8f0; margin: 0; padding: 0; min-height: 100vh; 
+}
+
+/* Header */
+header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.logo { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.user-email { font-size: 14px; color: #94a3b8; margin-right: 15px; }
+
+/* Ortak Alanlar */
+.container { max-width: 900px; margin: 60px auto; padding: 0 20px; }
+.text-center { text-align: center; }
+
+/* VS Code Uyarısı Düzeltilmiş Gradient Text */
+.gradient-text { background: linear-gradient(to right, #ffffff, #94a3b8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 36px; margin-bottom: 10px; }
+
+/* Cam Efektli Kartlar (Premium Hissiyat) */
+.glass-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Form ve Butonlar */
+.input-group { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 30px auto; }
+input[type="email"] { padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-size: 16px; transition: 0.3s; }
+input[type="email"]:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+
+.btn { padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.3s ease; border: none; }
+.btn.primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3); }
+
+.btn-outline { padding: 8px 16px; border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #e2e8f0; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+.msg { color: #8b949e; margin-top: 15px; font-size: 14px; }
+
+/* --- YENİ VİTRİN (HERO) TASARIMI --- */
+.hero-section { padding: 50px 40px; border-top: 4px solid #f59e0b; }
+.hero-logo { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 28px; font-weight: 900; margin-bottom: 25px; color: white; }
+.hero-description { font-size: 17px; line-height: 1.6; color: #cbd5e1; max-width: 750px; margin: 0 auto 30px auto; }
+
+.feature-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 40px; }
+.feature-badges .badge { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 16px; border-radius: 30px; font-size: 14px; color: #e2e8f0; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+.feature-badges .badge:hover { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b; }
+
+.login-box { background: rgba(0, 0, 0, 0.2); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto; }
+.login-box h3 { margin-top: 0; color: white; font-size: 18px; margin-bottom: 20px; }
+.security-note { font-size: 12px; color: #64748b; margin-top: 15px; }
+
+/* --- KONTROL PANELİ (DASHBOARD) TASARIMI --- */
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+.badge.free-badge { background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid rgba(245, 158, 11, 0.2); }
+
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+.dash-card { padding: 30px; }
+.dash-card h3 { margin-top: 0; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+
+.sub-text { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
+.license-box { background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.2); padding: 15px; font-family: monospace; font-size: 24px; color: #f59e0b; text-align: center; border-radius: 8px; letter-spacing: 2px; margin-bottom: 15px; }
+
+.status-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.upgrade-link { color: #f59e0b; text-decoration: none; font-weight: bold; font-size: 12px; }
+.upgrade-link:hover { text-decoration: underline; }
+
+.vertical { display: flex; flex-direction: column; gap: 15px; }
+.btn.windows { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; }
+.btn.mac { background: rgba(255,255,255,0.9); color: black; }
+.btn.windows:hover, .btn.mac:hover { transform: translateY(-3px); }
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) { 
+    .dashboard-grid { grid-template-columns: 1fr; } 
+    .feature-badges { flex-direction: column; align-items: center; }
+    .hero-description { font-size: 15px; }
+}
